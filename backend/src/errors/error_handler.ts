@@ -20,7 +20,7 @@ export const handleError = (err: unknown, res: express.Response) => {
             message: "Unauthorized!",
             error: err.message,
         }
-    }else {
+    }else{
         object = {
             statusCode: 500,
             message: "Internal Server error",

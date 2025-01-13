@@ -1,29 +1,15 @@
 import {User, UserModel} from "../schema/user";
-import {Authentication} from "../schema/authenticate";
 import {BadRequestError} from "../errors/errors";
-import { generateOtp, verifyOtp } from 'otp-generator-ts';
+import {generateOtp, verifyOtp} from "otp-generator-ts";
 import {EmailSender} from "./email_sender";
 
-export class Signup {
+export interface OtpServiceTemplate{
+    sendOtp(email: string): Promise<string>
+    verifyEmail(email: string, token: string, otp: string): Promise<UserModel>
+}
+
+export class OtpService implements OtpServiceTemplate{
     constructor(private readonly emailSender: EmailSender) {}
-    async signUp(name: string, password: string, email: string): Promise<UserModel> {
-        const alreadyExists = await Authentication.findOne({ email: email });
-        if (alreadyExists) {
-            throw new BadRequestError("User already exists");
-        }
-        let user = new User({
-            name: name,
-            email: email,
-        })
-        user = await user.save();
-        const authentication = new Authentication({
-            email: email,
-            password: password,
-            user_id: user._id,
-        });
-        authentication.save();
-        return user
-    }
     async sendOtp(email: string): Promise<string> {
         const user = User.findOne({
             email: email,
@@ -51,8 +37,8 @@ export class Signup {
             throw new BadRequestError("Wrong OTP");
         }
         const user = await User.findOneAndUpdate({
-            email: email,
-        },
+                email: email,
+            },
             {
                 isEmailVerified: true
             },

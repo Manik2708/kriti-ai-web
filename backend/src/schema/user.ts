@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
+import {ProjectModel} from "./project";
 
 export interface UserModel extends mongoose.Document {
     name: string;
     email: string;
     isEmailVerified: boolean;
-    projects: string[]
+    projects: ProjectModel[];
     _doc?: any;
 }
 
@@ -22,11 +23,12 @@ const userSchema = new mongoose.Schema<UserModel>({
         required: true,
         default: false,
     },
-    projects: {
-        type: [String],
+    projects: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Project",
         required: true,
         default: [],
-    }
+    }]
 });
 
 userSchema.index({ email: 'text' });

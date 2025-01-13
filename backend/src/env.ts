@@ -8,6 +8,7 @@ export class Environment {
     static NODEMAILER_SERVICE = process.env.NODEMAILER_SERVICE!;
     static NODEMAILER_SENDER_EMAIL = process.env.NODEMAILER_SENDER_EMAIL!;
     static NODEMAILER_SENDER_PASSWORD = process.env.NODEMAILER_SENDER_PASSWORD!;
+    static PORT = process.env.PORT == null ? '3000' : process.env.PORT;
 }
 
 export const validateEnvVar = () => {

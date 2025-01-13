@@ -18,7 +18,7 @@ export class EmailSenderService implements EmailSender {
         transporter.sendMail({
                 to: email,
                 subject: subject,
-                text: email,
+                text: text,
             },
             (error) => {
                 if (error) {
