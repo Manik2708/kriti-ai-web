@@ -26,7 +26,7 @@ export class UserController implements ControllerRegister {
     }
     registerRouter(): RouterRegistrar {
         const router = express.Router();
-        const object = new ControllerTemplate(router)
+        const object = new ControllerTemplate(router);
         object.addControllerWithoutMiddleware("/signup", RequestMethodTypes.POST, this.signUpController)
         object.addControllerWithoutMiddleware("/login", RequestMethodTypes.POST, this.loginController)
         return {

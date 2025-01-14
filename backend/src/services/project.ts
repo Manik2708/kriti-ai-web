@@ -1,5 +1,5 @@
-import {User, UserModel} from "../schema/user";
-import {BadRequestError, UnauthorizedError} from "../errors/errors";
+import {User} from "../schema/user";
+import {BadRequestError, InternalServerError, UnauthorizedError} from "../errors/errors";
 import {Project, ProjectModel} from "../schema/project";
 
 export interface ProjectServiceTemplate {
@@ -35,7 +35,11 @@ export class ProjectService implements ProjectServiceTemplate {
         if (project_model.user_id != user_id) {
             throw new UnauthorizedError("You are not the owner of this project");
         }
-        return Project.findByIdAndUpdate(project._id, project_model, { new: true })
+        const updated_project = await Project.findByIdAndUpdate(project._id, project_model, { new: true })
+        if (!updated_project) {
+            throw new InternalServerError("Project not found");
+        }
+        return updated_project;
     }
     async deleteProject(user_id: string, project_id: string): Promise<ProjectModel> {
         const project_model = await Project.findById(project_id);
@@ -53,6 +57,10 @@ export class ProjectService implements ProjectServiceTemplate {
         if (!user) {
             throw new BadRequestError('User not found');
         }
-        return Project.findByIdAndDelete(project_model._id);
+        const deleted_project = await Project.findByIdAndDelete(project_model._id);
+        if (!deleted_project) {
+            throw new InternalServerError("Project not found");
+        }
+        return deleted_project
     }
 }

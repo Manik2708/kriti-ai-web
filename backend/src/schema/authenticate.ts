@@ -22,5 +22,5 @@ const authenticationSchema = new mongoose.Schema<AuthenticationModel>({
 })
 
 authenticationSchema.index({ email: 'text' });
-export const Authentication = new mongoose.Model('Authentication', authenticationSchema);
+export const Authentication = mongoose.model('Authentication', authenticationSchema);
 

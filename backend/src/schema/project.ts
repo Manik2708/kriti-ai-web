@@ -32,5 +32,5 @@ const projectSchema = new mongoose.Schema<ProjectModel>({
 })
 
 projectSchema.index({ user_id: 'text' });
-export const Project = new mongoose.Model('Project', projectSchema);
+export const Project = mongoose.model('Project', projectSchema);
 

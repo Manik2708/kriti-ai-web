@@ -26,7 +26,7 @@ export class OtpController implements ControllerRegister {
     }
     registerRouter(): RouterRegistrar {
         const router = express.Router();
-        const object = new ControllerTemplate(router)
+        const object = new ControllerTemplate(router);
         object.addControllerWithoutMiddleware("/send-otp", RequestMethodTypes.POST, this.sendOtpController)
         object.addControllerWithoutMiddleware("/verify-email", RequestMethodTypes.POST, this.verifyEmail)
         return {

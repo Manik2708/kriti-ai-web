@@ -4,6 +4,7 @@ import {BadRequestError, UnauthorizedError} from "../errors/errors";
 import jwt from "jsonwebtoken";
 import {Environment} from "../env";
 import {User} from "../schema/user";
+import logger from "../logger";
 
 type controllerType = (req: express.Request, res: express.Response) => void
 type middlewareType = (req: express.Request, res: express.Response, next: express.NextFunction) => void
@@ -19,8 +20,10 @@ export class ControllerTemplate {
     constructor(private readonly router: express.Router) {}
     addControllerWithAuthMiddleware(path: string, method: RequestMethodTypes, controllerType: controllerType){
         this.addControllerWithMiddleware(path, method, this.authMiddleware, controllerType)
+        logger.info(`Adding ${method} controller with AuthMiddleware with path: ${path}`);
     }
     addControllerWithoutMiddleware(path: string, method: RequestMethodTypes, controllerType: controllerType){
+        logger.info(`Adding ${method} controller without middleware with path: ${path}`);
         switch (method) {
             case RequestMethodTypes.POST:
                 this.router.post(path, controllerType);

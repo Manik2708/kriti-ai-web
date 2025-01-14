@@ -5,7 +5,7 @@ import {handleError} from "../errors/error_handler";
 import {ControllerTemplate, RequestMethodTypes} from "./controller_template";
 
 export class ProjectController implements ControllerRegister{
-    constructor(private readonly projectService: ProjectServiceTemplate){}
+    constructor(private readonly projectService: ProjectServiceTemplate) {}
     private async createProject(req: express.Request, res: express.Response){
         try{
            const {title, description, link} = req.body;
@@ -43,7 +43,7 @@ export class ProjectController implements ControllerRegister{
     }
     registerRouter(): RouterRegistrar {
         const router = express.Router();
-        const object = new ControllerTemplate(router)
+        const object = new ControllerTemplate(router);
         object.addControllerWithAuthMiddleware("/", RequestMethodTypes.GET, this.getProjects)
         object.addControllerWithAuthMiddleware("/", RequestMethodTypes.POST, this.createProject)
         object.addControllerWithAuthMiddleware("/", RequestMethodTypes.PUT, this.updateProject)

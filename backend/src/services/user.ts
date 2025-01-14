@@ -22,9 +22,10 @@ export class UserService implements UserServiceTemplate {
             email: email,
         })
         user = await user.save();
+        const encryptedPassword = await bcrypt.hash(password, 12);
         const authentication = new Authentication({
             email: email,
-            password: password,
+            password: encryptedPassword,
             user_id: user._id,
         });
         authentication.save();
@@ -43,7 +44,7 @@ export class UserService implements UserServiceTemplate {
         if (!matched) {
             throw new BadRequestError("Wrong email or password");
         }
-        const usr = await User.findById(passwordFromDb.user_id)
+        const usr = await User.findById(authentication.user_id)
         if (!usr) {
             throw new BadRequestError("User not found");
         }
