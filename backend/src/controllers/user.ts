@@ -1,11 +1,11 @@
-import {UserServiceTemplate} from "../services/user";
 import express from "express";
 import {handleError} from "../errors/error_handler";
 import {ControllerRegister, RouterRegistrar} from "./controller_register";
 import {ControllerTemplate, RequestMethodTypes} from "./controller_template";
+import {UserServiceFactory} from "../factories/user";
 
 export class UserController implements ControllerRegister {
-    constructor(private readonly userService: UserServiceTemplate) {}
+    constructor(private readonly userService: UserServiceFactory) {}
     private async signUpController(req: express.Request, res: express.Response){
         try {
             const {email, password, name} = req.body;

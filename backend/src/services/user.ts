@@ -5,13 +5,9 @@ import {LoginResponse} from "../models/login";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {Environment} from "../env";
+import {UserServiceFactory} from "../factories/user";
 
-export interface UserServiceTemplate {
-    signUp(name: string, password: string, email: string): Promise<UserModel>
-    login(email: string, password: string): Promise<LoginResponse>
-}
-
-export class UserService implements UserServiceTemplate {
+export class UserService implements UserServiceFactory {
     async signUp(name: string, password: string, email: string): Promise<UserModel> {
         const alreadyExists = await Authentication.findOne({ email: email });
         if (alreadyExists) {
@@ -28,7 +24,7 @@ export class UserService implements UserServiceTemplate {
             password: encryptedPassword,
             user_id: user._id,
         });
-        authentication.save();
+        await authentication.save();
         return user
     }
     async login(email: string, password: string): Promise<LoginResponse> {

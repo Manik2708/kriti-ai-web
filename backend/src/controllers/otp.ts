@@ -1,11 +1,11 @@
 import {ControllerRegister, RouterRegistrar} from "./controller_register";
-import {OtpServiceTemplate} from "../services/otp";
 import express from "express";
 import {handleError} from "../errors/error_handler";
 import {ControllerTemplate, RequestMethodTypes} from "./controller_template";
+import {OtpServiceFactory} from "../factories/otp";
 
 export class OtpController implements ControllerRegister {
-    constructor(private readonly otpService: OtpServiceTemplate) {}
+    constructor(private readonly otpService: OtpServiceFactory) {}
     private async sendOtpController(req: express.Request, res: express.Response){
         try {
             const {email} = req.body;

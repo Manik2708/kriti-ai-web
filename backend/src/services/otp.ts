@@ -1,15 +1,11 @@
 import {User, UserModel} from "../schema/user";
 import {BadRequestError} from "../errors/errors";
 import {generateOtp, verifyOtp} from "otp-generator-ts";
-import {EmailSender} from "./email_sender";
+import {OtpServiceFactory} from "../factories/otp";
+import {EmailSenderFactory} from "../factories/email_sender";
 
-export interface OtpServiceTemplate{
-    sendOtp(email: string): Promise<string>
-    verifyEmail(email: string, token: string, otp: string): Promise<UserModel>
-}
-
-export class OtpService implements OtpServiceTemplate{
-    constructor(private readonly emailSender: EmailSender) {}
+export class OtpService implements OtpServiceFactory{
+    constructor(private readonly emailSender: EmailSenderFactory) {}
     async sendOtp(email: string): Promise<string> {
         const user = User.findOne({
             email: email,
