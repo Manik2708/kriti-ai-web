@@ -1,12 +1,9 @@
 import sendmail from "nodemailer";
 import {Environment} from "../env";
 import {InternalServerError} from "../errors/errors";
+import {EmailSenderFactory} from "../factories/email_sender";
 
-export interface EmailSender {
-    sendEmail(email: string, subject: string, text: string): void;
-}
-
-export class EmailSenderService implements EmailSender {
+export class EmailSenderService implements EmailSenderFactory {
     sendEmail(email: string, subject: string, text: string): void {
         const transporter = sendmail.createTransport({
             service: Environment.NODEMAILER_SERVICE,

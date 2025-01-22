@@ -9,6 +9,7 @@ export class Environment {
     static NODEMAILER_SENDER_EMAIL = process.env.NODEMAILER_SENDER_EMAIL!;
     static NODEMAILER_SENDER_PASSWORD = process.env.NODEMAILER_SENDER_PASSWORD!;
     static PORT = process.env.PORT == null ? '3000' : process.env.PORT;
+    static MONGODB_URI = process.env.MONGODB_URI!;
 }
 
 export const validateEnvVar = () => {
@@ -26,5 +27,8 @@ export const validateEnvVar = () => {
     }
     if (!process.env.NODEMAILER_SENDER_PASSWORD) {
         throw Error("No NodeMAILER_SENDER_PASSWORD provided");
+    }
+    if (!process.env.MONGODB_URI) {
+        throw Error("No MongoDB URI provided");
     }
 }

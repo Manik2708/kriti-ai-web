@@ -1,11 +1,11 @@
 import {ControllerRegister, RouterRegistrar} from "./controller_register";
-import {ProjectServiceTemplate} from "../services/project";
 import express from "express";
 import {handleError} from "../errors/error_handler";
 import {ControllerTemplate, RequestMethodTypes} from "./controller_template";
+import {ProjectServiceFactory} from "../factories/project";
 
 export class ProjectController implements ControllerRegister{
-    constructor(private readonly projectService: ProjectServiceTemplate) {}
+    constructor(private readonly projectService: ProjectServiceFactory) {}
     private async createProject(req: express.Request, res: express.Response){
         try{
            const {title, description, link} = req.body;

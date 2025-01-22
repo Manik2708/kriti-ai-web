@@ -1,15 +1,9 @@
 import {User} from "../schema/user";
 import {BadRequestError, InternalServerError, UnauthorizedError} from "../errors/errors";
 import {Project, ProjectModel} from "../schema/project";
+import {ProjectServiceFactory} from "../factories/project";
 
-export interface ProjectServiceTemplate {
-    getProjects(user_id: string): Promise<ProjectModel[]>
-    createProject(user_id: string, title: string, description: string, link: string): Promise<ProjectModel>
-    updateProject(user_id: string, project: ProjectModel): Promise<ProjectModel>
-    deleteProject(user_id: string, project_id: string): Promise<ProjectModel>
-}
-
-export class ProjectService implements ProjectServiceTemplate {
+export class ProjectService implements ProjectServiceFactory {
     async getProjects(user_id: string): Promise<ProjectModel[]> {
         const user = await User.findById(user_id).populate("projects");
         if (!user) {
@@ -17,13 +11,15 @@ export class ProjectService implements ProjectServiceTemplate {
         }
         return user.projects
     }
-    async createProject(user_id: string, title: string, description: string, link: string): Promise<ProjectModel> {
+    async createProject(user_id: string, title: string, description: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
         const project = new Project({
             user_id: user_id,
             title: title,
             description: description,
-            link: link,
+            editable_file: editable_file,
+            non_editable_file: non_editable_file,
             last_edited: new Date(),
+            status: 'NOTDEPLOYED'
         })
         return project.save()
     }
