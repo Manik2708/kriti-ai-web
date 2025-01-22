@@ -8,7 +8,7 @@ import {MongoClient} from "mongodb"
 dotenv.config();
 
 const main = async () => {
-    validateEnvVar();
+    //validateEnvVar();
     const client = new MongoClient(Environment.MONGODB_URI);
     await client.connect();
     const app = express();

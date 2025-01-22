@@ -8,8 +8,8 @@ export class ProjectController implements ControllerRegister{
     constructor(private readonly projectService: ProjectServiceFactory) {}
     private async createProject(req: express.Request, res: express.Response){
         try{
-           const {title, description, link} = req.body;
-           const project = await this.projectService.createProject(req.id!, title, description, link);
+           const {title, description, editable_file, non_editable_file} = req.body;
+           const project = await this.projectService.createProject(req.id!, title, description, editable_file, non_editable_file);
            return res.status(201).json(project);
         }catch(e){
             handleError(e, res)
