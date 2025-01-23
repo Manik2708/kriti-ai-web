@@ -6,7 +6,7 @@
     "test": "jest --coverage",
     "build": "tsc",
     "start:prod": "node dist/index.js",
-    "buildAndStart": "tsc && node dist/index.js"
+    "buildAndStart": "tsc && node dist/src/index.js"
   },
   "author": "",
   "license": "ISC",
