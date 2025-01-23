@@ -4,12 +4,13 @@ import {Project, ProjectModel} from "../schema/project";
 import {ProjectServiceFactory} from "../factories/project";
 
 export class ProjectService implements ProjectServiceFactory {
-    async getProjects(user_id: string): Promise<ProjectModel[]> {
-        const user = await User.findById(user_id).populate("projects");
-        if (!user) {
-            throw new BadRequestError('User not found');
-        }
-        return user.projects
+    async getProject(user_id: string, project_id: string): Promise<ProjectModel> {
+        const project = await Project.findOne({
+            _id: project_id,
+            user_id: user_id,
+        })
+        if (!project) throw new BadRequestError("No project found with this project and user id")
+        return project;
     }
     async createProject(user_id: string, title: string, description: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
         const project = new Project({

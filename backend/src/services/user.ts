@@ -1,50 +1,23 @@
 import {User, UserModel} from "../schema/user";
-import {Authentication} from "../schema/authenticate";
-import {BadRequestError, InternalServerError} from "../errors/errors";
-import {LoginResponse} from "../models/login";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import {Environment} from "../env";
 import {UserServiceFactory} from "../factories/user";
+import {ProjectModel} from "../schema/project";
+import {BadRequestError} from "../errors/errors";
 
 export class UserService implements UserServiceFactory {
-    async signUp(name: string, password: string, email: string): Promise<UserModel> {
-        const alreadyExists = await Authentication.findOne({ email: email });
-        if (alreadyExists) {
-            throw new BadRequestError("User already exists");
-        }
+    async saveUser(name: string, email: string, clerk_user_id: string): Promise<UserModel> {
         let user = new User({
             name: name,
             email: email,
+            clerk_user_id: clerk_user_id,
         })
         user = await user.save();
-        const encryptedPassword = await bcrypt.hash(password, 12);
-        const authentication = new Authentication({
-            email: email,
-            password: encryptedPassword,
-            user_id: user._id,
-        });
-        await authentication.save();
         return user
     }
-    async login(email: string, password: string): Promise<LoginResponse> {
-        const authentication = await Authentication.findOne({email: email});
-        if (!authentication) {
-            throw new BadRequestError("No user found with this email");
+    async getProjects(user_id: string): Promise<ProjectModel[]> {
+        const user = await User.findById(user_id).populate("projects");
+        if (!user) {
+            throw new BadRequestError('User not found');
         }
-        const passwordFromDb = authentication.password;
-        if (!passwordFromDb) {
-            throw new InternalServerError("Password not found in authentication");
-        }
-        const matched = await bcrypt.compare(password, passwordFromDb);
-        if (!matched) {
-            throw new BadRequestError("Wrong email or password");
-        }
-        const usr = await User.findById(authentication.user_id)
-        if (!usr) {
-            throw new BadRequestError("User not found");
-        }
-        const token = jwt.sign({ id: usr._id }, Environment.JSON_SECRET_KEY, {})
-        return {token: token, ...usr._doc}
+        return user.projects
     }
 }

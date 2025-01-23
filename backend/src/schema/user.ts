@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 import {ProjectModel} from "./project";
 
 export interface UserModel extends mongoose.Document {
+    _id: mongoose.Types.ObjectId;
     name: string;
     email: string;
-    isEmailVerified: boolean;
+    clerk_user_id: string;
     projects: ProjectModel[];
     _doc?: any;
 }
@@ -18,18 +19,17 @@ const userSchema = new mongoose.Schema<UserModel>({
         type: String,
         required: true,
     },
-    isEmailVerified: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
     projects: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project",
         required: true,
         default: [],
-    }]
+    }],
+    clerk_user_id: {
+        type: String,
+        required: true,
+    }
 });
 
-userSchema.index({ email: 'text' });
+userSchema.index({ clerk_user_id: 'text' });
 export const User = mongoose.model('User', userSchema);

@@ -9,7 +9,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/"
+    "src/",
+    "tests/"
   ],
   "files": [
     "src/request.d.ts"

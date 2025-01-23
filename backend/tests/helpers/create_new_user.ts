@@ -4,7 +4,7 @@ import randomstring from "randomstring";
 
 export const createUser = async (): Promise<UserModel> => {
     const userService = new UserService();
-    return userService.signUp(
+    return userService.saveUser(
         randomstring.generate(),
         randomstring.generate(),
         randomstring.generate()

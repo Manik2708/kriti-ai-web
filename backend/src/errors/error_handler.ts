@@ -31,6 +31,14 @@ export const handleError = (err: unknown, res: express.Response) => {
     return res.status(statusCode).json(message);
 }
 
+export const getBadRequestErrorObject = (error: Error): ErrorObject => {
+    return {
+        statusCode: 400,
+        error: error.message,
+        message: "Bad Request",
+    }
+}
+
 interface ErrorObject {
     statusCode: number
     message: string

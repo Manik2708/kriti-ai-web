@@ -1,12 +1,13 @@
 import {ControllerRegister, RouterRegistrar} from "./controller_register";
 import express from "express";
-import {handleError} from "../errors/error_handler";
-import {ControllerTemplate, RequestMethodTypes} from "./controller_template";
+import {getBadRequestErrorObject, handleError} from "../errors/error_handler";
+import {RequestMethodTypes} from "./controller_template";
 import {ProjectServiceFactory} from "../factories/project";
+import {ControllerTemplateFactory} from "../factories/controller_factory";
 
 export class ProjectController implements ControllerRegister{
-    constructor(private readonly projectService: ProjectServiceFactory) {}
-    private async createProject(req: express.Request, res: express.Response){
+    constructor(private readonly projectService: ProjectServiceFactory, private readonly object: ControllerTemplateFactory) {}
+    private createProject = async (req: express.Request, res: express.Response) => {
         try{
            const {title, description, editable_file, non_editable_file} = req.body;
            const project = await this.projectService.createProject(req.id!, title, description, editable_file, non_editable_file);
@@ -15,15 +16,20 @@ export class ProjectController implements ControllerRegister{
             handleError(e, res)
         }
     }
-    private async getProjects(req: express.Request, res: express.Response){
+    private getProjects = async (req: express.Request, res: express.Response) => {
         try {
-            const projects = this.projectService.getProjects(req.id!);
+            const project_id = req.query.projectId;
+            if (typeof project_id !== "string") {
+                const {statusCode, ...object} = getBadRequestErrorObject(new Error("Invalid project"));
+                return res.status(statusCode).json(object);
+            }
+            const projects = this.projectService.getProject(req.id!, project_id);
             return res.status(200).json(projects);
         }catch(e){
             handleError(e, res)
         }
     }
-    private async updateProject(req: express.Request, res: express.Response){
+    private updateProject = async (req: express.Request, res: express.Response) => {
         try{
             const {projectModel} = req.body;
             const project = await this.projectService.updateProject(req.id!, projectModel);
@@ -32,7 +38,7 @@ export class ProjectController implements ControllerRegister{
             handleError(e, res)
         }
     }
-    private async deleteProject(req: express.Request, res: express.Response){
+    private deleteProject = async (req: express.Request, res: express.Response) => {
         try{
             const {projectId} = req.params;
             const project = await this.projectService.deleteProject(req.id!, projectId);
@@ -41,13 +47,12 @@ export class ProjectController implements ControllerRegister{
             handleError(e, res)
         }
     }
-    registerRouter(): RouterRegistrar {
+    registerRouter = (): RouterRegistrar => {
         const router = express.Router();
-        const object = new ControllerTemplate(router);
-        object.addControllerWithAuthMiddleware("/", RequestMethodTypes.GET, this.getProjects)
-        object.addControllerWithAuthMiddleware("/", RequestMethodTypes.POST, this.createProject)
-        object.addControllerWithAuthMiddleware("/", RequestMethodTypes.PUT, this.updateProject)
-        object.addControllerWithAuthMiddleware("/:projectId", RequestMethodTypes.DELETE, this.deleteProject)
+        this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.GET, this.getProjects)
+        this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.POST, this.createProject)
+        this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.PUT, this.updateProject)
+        this.object.addControllerWithAuthMiddleware(router, "/:projectId", RequestMethodTypes.DELETE, this.deleteProject)
         return {
             router: router,
             path: '/project'

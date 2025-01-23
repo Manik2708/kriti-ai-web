@@ -1,13 +1,11 @@
 import {ControllerRegister} from "./controller_register";
 import express from "express";
-import {UserController} from "./user";
-import {UserService} from "../services/user";
-import {EmailSenderService} from "../services/email_sender";
-import {OtpController} from "./otp";
-import {OtpService} from "../services/otp";
 import {ProjectController} from "./project";
 import {ProjectService} from "../services/project";
 import logger from "../logger";
+import {ControllerTemplate} from "./controller_template";
+import {UserController} from "./user";
+import {UserService} from "../services/user";
 
 export class GlobalRouterRegister {
     constructor(private routers: ControllerRegister[]) {}
@@ -20,10 +18,11 @@ export class GlobalRouterRegister {
     }
 }
 
+const object = new ControllerTemplate()
+
 const controllers = [
-    new UserController(new UserService()),
-    new OtpController(new OtpService(new EmailSenderService())),
-    new ProjectController(new ProjectService()),
+    new UserController(new UserService(), object),
+    new ProjectController(new ProjectService(), object),
 ];
 
 export const globalRouterContainer = new GlobalRouterRegister(controllers);
