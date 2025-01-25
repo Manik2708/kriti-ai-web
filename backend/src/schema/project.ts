@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import {MessageModel} from "./message";
 
-export interface ProjectModel extends mongoose.Document {
+export interface ProjectModel {
     _id: mongoose.Types.ObjectId;
     title: string;
     description: string;
@@ -12,6 +12,7 @@ export interface ProjectModel extends mongoose.Document {
     deployment_link?: string;
     messages: MessageModel[];
     last_edited: Date;
+    _doc?: any
 }
 
 type Status = 'DEPOLOYED' | 'NOTDEPLOYED'
