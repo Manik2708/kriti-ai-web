@@ -8,6 +8,9 @@ export class ProjectService implements ProjectServiceFactory {
         const project = await Project.findOne({
             _id: project_id,
             user_id: user_id,
+        }).populate({
+            path: "messages",
+            select: "-website_content"
         })
         if (!project) throw new BadRequestError("No project found with this project and user id")
         return project;

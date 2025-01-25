@@ -5,6 +5,12 @@ import {BadRequestError} from "../errors/errors";
 
 export class UserService implements UserServiceFactory {
     async saveUser(name: string, email: string, clerk_user_id: string): Promise<UserModel> {
+        const alreadyUser = await User.findOne({
+            clerk_user_id: clerk_user_id,
+        })
+        if (alreadyUser) {
+            return alreadyUser;
+        }
         let user = new User({
             name: name,
             email: email,
