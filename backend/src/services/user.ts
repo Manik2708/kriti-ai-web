@@ -20,7 +20,10 @@ export class UserService implements UserServiceFactory {
         return user
     }
     async getProjects(user_id: string): Promise<ProjectModel[]> {
-        const user = await User.findById(user_id).populate("projects");
+        const user = await User.findById(user_id).populate({
+            path: "projects",
+            select:
+        });
         if (!user) {
             throw new BadRequestError('User not found');
         }
