@@ -4,7 +4,7 @@ import {Environment, validateEnvVar} from "./env";
 import {globalRouterContainer} from "./controllers/router_container";
 import logger from "./logger";
 import mongoose from "mongoose";
-
+import cors from 'cors';
 dotenv.config();
 
 const main = async () => {
@@ -12,6 +12,7 @@ const main = async () => {
     await mongoose.connect(Environment.MONGODB_URI);
     const app = express();
     app.use(express.json());
+    app.use(cors());
     globalRouterContainer.registerAllRoutes(app)
     app.listen(Environment.PORT, () => {
         logger.info(`Server is running on port ${Environment.PORT}`);

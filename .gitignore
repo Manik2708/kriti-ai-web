@@ -3,6 +3,9 @@ backend/package-lock.json
 frontend/node_modules/
 frontend/package-lock.json
 .idea
+frontend/.env
 backend/.env
 backend/coverage
 backend/dist
+node_modules
+package-lock.json
