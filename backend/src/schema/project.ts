@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import {MessageModel} from "./message";
 
 export interface ProjectModel extends mongoose.Document {
+    _id: mongoose.Types.ObjectId;
     title: string;
     description: string;
     editable_file: string;

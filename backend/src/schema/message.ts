@@ -27,5 +27,5 @@ const messageSchema = new mongoose.Schema<MessageModel>({
     }
 })
 
-type UserType = 'USER' | 'AI';
+export type UserType = 'USER' | 'AI';
 export const Message = mongoose.model('Message', messageSchema);
