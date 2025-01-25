@@ -2,6 +2,7 @@ import { Router } from "express";
 import {middlewareType, RequestMethodTypes} from "../../src/controllers/controller_template";
 import {ControllerTemplateFactory, ControllerType} from "../../src/factories/controller_factory";
 import express from "express";
+import {mockMiddleware} from "../../src/mock_middleware";
 
 export const mockClerkId: string = "mockClerkId";
 export const mockUserId: string = "mockUserId";
@@ -39,7 +40,7 @@ export class MockControllerTemplate implements ControllerTemplateFactory {
         }
     }
     private mockMiddleware = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-        req.id = mockUserId
+        mockMiddleware(req, mockUserId)
         return next();
     }
 }
