@@ -47,7 +47,6 @@ const projectSchema = new mongoose.Schema<ProjectModel>({
     },
     deployment_link: {
         type: String,
-        required: true,
         default: null,
     },
     messages: [{
