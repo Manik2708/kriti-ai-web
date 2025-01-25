@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
-export interface MessageModel extends mongoose.Document {
+export interface MessageModel {
+    _id: mongoose.Types.ObjectId;
     project_id: string;
     message: string;
     user_type: UserType;
     website_content?: string;
+    _doc?: any;
 }
 
 const messageSchema = new mongoose.Schema<MessageModel>({

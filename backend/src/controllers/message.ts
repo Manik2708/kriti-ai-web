@@ -18,8 +18,8 @@ export class MessageController implements ControllerRegister {
     }
     private create = async (req: express.Request, res: express.Response) => {
         try {
-            const {user_id, project_id, message, website_content, user_type} = req.body;
-            const messageModel = await this.messageService.create(user_id, project_id, message, website_content, user_type);
+            const {project_id, message, website_content, user_type} = req.body;
+            const messageModel = await this.messageService.create(req.id!, project_id, message, website_content, user_type);
             return res.status(201).json(messageModel);
         }catch(err){
             handleError(err, res);

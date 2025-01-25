@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import {ProjectModel} from "./project";
 
-export interface UserModel extends mongoose.Document {
+export interface UserModel {
     _id: mongoose.Types.ObjectId;
     name: string;
     email: string;
