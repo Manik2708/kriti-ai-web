@@ -31,8 +31,8 @@ export class ProjectController implements ControllerRegister{
     }
     private updateProject = async (req: express.Request, res: express.Response) => {
         try{
-            const {projectModel} = req.body;
-            const project = await this.projectService.updateProject(req.id!, projectModel);
+            const {project_id, editable_file, non_editable_file} = req.body;
+            const project = await this.projectService.updateProject(req.id!, project_id, editable_file, non_editable_file);
             return res.status(200).json(project);
         }catch(e){
             handleError(e, res)

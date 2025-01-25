@@ -31,15 +31,24 @@ export class ProjectService implements ProjectServiceFactory {
         })
         return project;
     }
-    async updateProject(user_id: string, project: ProjectModel): Promise<ProjectModel> {
-        const project_model = await Project.findById(project._id);
+    async updateProject(user_id: string, project_id: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
+        const project_model = await Project.findById(project_id);
         if (!project_model) {
             throw new BadRequestError('Project not found');
         }
         if (project_model.user_id != user_id) {
             throw new UnauthorizedError("You are not the owner of this project");
         }
-        const updated_project = await Project.findByIdAndUpdate(project._id, project_model, { new: true })
+        const updated_project = await Project.findByIdAndUpdate(project_id, {
+            $set: {
+                editable_file: editable_file,
+                non_editable_file: non_editable_file
+            }
+        },
+            {
+                new: true
+            }
+        )
         if (!updated_project) {
             throw new InternalServerError("Project not found");
         }

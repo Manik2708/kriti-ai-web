@@ -26,8 +26,13 @@ class MockProjectService implements ProjectServiceFactory {
             resolve(project);
         });
     }
-    updateProject(user_id: string, project: ProjectModel): Promise<ProjectModel> {
+    updateProject(user_id: string, project_id: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
         return new Promise<ProjectModel>((resolve, reject) => {
+            const project = {
+                user_id: user_id,
+                editable_file: editable_file,
+                non_editable_file: non_editable_file,
+            } as ProjectModel;
             resolve(project);
         });
     }
@@ -50,30 +55,15 @@ describe('ProjectController', () => {
     app.use(express.json())
     app.use(router.path, router.router)
     it("Update", async () => {
-        const projectModel = {
-            _id: randomstring.generate(),
-            title: randomstring.generate(),
-            description: randomstring.generate(),
-            editable_file: randomstring.generate(),
-            non_editable_file: randomstring.generate(),
-            user_id: randomstring.generate(),
-            status: 'USER',
-            deployment_link: randomstring.generate(),
-            last_edited: new Date(),
-        }
         const body = {
-            projectModel: projectModel
-        }
-        const {last_edited, ...objectWithoutDate} = projectModel
-        const last_edited_string = last_edited.toISOString();
-        const expectedProject = {
-            last_edited: last_edited_string,
-            ...objectWithoutDate
+            project_id: randomstring.generate(),
+            editable_file: randomstring.generate(),
+            non_editable_file: randomstring.generate()
         }
         const called = jest.spyOn(mockProjectService, "updateProject")
         await request(app).put("/project/").send(body).expect(200)
         expect(called).toBeCalledTimes(1)
-        expect(called).toBeCalledWith(mockUserId, expectedProject)
+        expect(called).toBeCalledWith(mockUserId, body.project_id, body.editable_file, body.non_editable_file)
     })
     it("Get", async () => {
         const called = jest.spyOn(mockProjectService, "getProject")
