@@ -16,7 +16,7 @@ export class ProjectService implements ProjectServiceFactory {
         return project;
     }
     async createProject(user_id: string, title: string, description: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
-        const project = new Project({
+        let project = new Project({
             user_id: user_id,
             title: title,
             description: description,
@@ -25,7 +25,13 @@ export class ProjectService implements ProjectServiceFactory {
             last_edited: new Date(),
             status: 'NOTDEPLOYED'
         })
-        return project.save()
+        project = await project.save()
+        await User.findByIdAndUpdate(user_id, {
+            $push: {
+                projects: project._id
+            }
+        })
+        return project;
     }
     async updateProject(user_id: string, project: ProjectModel): Promise<ProjectModel> {
         const project_model = await Project.findById(project._id);
