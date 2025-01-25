@@ -28,11 +28,11 @@ const projectSchema = new mongoose.Schema<ProjectModel>({
     },
     editable_file: {
         type: String,
-        required: true,
+        default: null,
     },
     non_editable_file: {
         type: String,
-        required: true,
+        default: null,
     },
     user_id: {
         type: String,

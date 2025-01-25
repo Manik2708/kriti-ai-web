@@ -16,14 +16,12 @@ class MockProjectService implements ProjectServiceFactory {
             resolve(project);
         });
     }
-    createProject(user_id: string, title: string, description: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
+    createProject(user_id: string, title: string, description: string): Promise<ProjectModel> {
         return new Promise<ProjectModel>((resolve, reject) => {
             const project = {
                 user_id: user_id,
                 title: title,
                 description: description,
-                editable_file: editable_file,
-                non_editable_file: non_editable_file,
             } as ProjectModel;
             resolve(project);
         });
@@ -76,5 +74,11 @@ describe('ProjectController', () => {
         await request(app).put("/project/").send(body).expect(200)
         expect(called).toBeCalledTimes(1)
         expect(called).toBeCalledWith(mockUserId, expectedProject)
+    })
+    it("Get", async () => {
+        const called = jest.spyOn(mockProjectService, "getProject")
+        await request(app).get("/project/?projectId=mockprojectid").expect(200)
+        expect(called).toBeCalledTimes(1)
+        expect(called).toBeCalledWith(mockUserId, "mockprojectid")
     })
 })

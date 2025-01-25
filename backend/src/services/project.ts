@@ -15,13 +15,11 @@ export class ProjectService implements ProjectServiceFactory {
         if (!project) throw new BadRequestError("No project found with this project and user id")
         return project;
     }
-    async createProject(user_id: string, title: string, description: string, editable_file: string, non_editable_file: string): Promise<ProjectModel> {
+    async createProject(user_id: string, title: string, description: string): Promise<ProjectModel> {
         let project = new Project({
             user_id: user_id,
             title: title,
             description: description,
-            editable_file: editable_file,
-            non_editable_file: non_editable_file,
             last_edited: new Date(),
             status: 'NOTDEPLOYED'
         })

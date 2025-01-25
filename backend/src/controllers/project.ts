@@ -9,8 +9,8 @@ export class ProjectController implements ControllerRegister{
     constructor(private readonly projectService: ProjectServiceFactory, private readonly object: ControllerTemplateFactory) {}
     private createProject = async (req: express.Request, res: express.Response) => {
         try{
-           const {title, description, editable_file, non_editable_file} = req.body;
-           const project = await this.projectService.createProject(req.id!, title, description, editable_file, non_editable_file);
+           const {title, description} = req.body;
+           const project = await this.projectService.createProject(req.id!, title, description);
            return res.status(201).json(project);
         }catch(e){
             handleError(e, res)
@@ -23,7 +23,7 @@ export class ProjectController implements ControllerRegister{
                 const {statusCode, ...object} = getBadRequestErrorObject(new Error("Invalid project"));
                 return res.status(statusCode).json(object);
             }
-            const projects = this.projectService.getProject(req.id!, project_id);
+            const projects = await this.projectService.getProject(req.id!, project_id);
             return res.status(200).json(projects);
         }catch(e){
             handleError(e, res)

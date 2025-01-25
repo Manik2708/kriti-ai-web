@@ -17,7 +17,7 @@ describe('ProjectService', () => {
     })
     it("Get", async ()=> {
         const user = await createUser()
-        const project = await projectService.createProject(user._id.toString(), randomstring.generate(), randomstring.generate(), randomstring.generate(), randomstring.generate())
+        const project = await projectService.createProject(user._id.toString(), randomstring.generate(), randomstring.generate())
         await messageService.create(user._id.toString(), project._id.toString(), randomstring.generate(), randomstring.generate(), 'USER')
         const gotProject = await projectService.getProject(user._id.toString(), project._id.toString())
         expect(gotProject._id).toEqual(project._id);
