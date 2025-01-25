@@ -22,7 +22,7 @@ export class UserService implements UserServiceFactory {
     async getProjects(user_id: string): Promise<ProjectModel[]> {
         const user = await User.findById(user_id).populate({
             path: "projects",
-            select: "-editable_file non_editable_file"
+            select: "-editable_file -non_editable_file"
         });
         if (!user) {
             throw new BadRequestError('User not found');
