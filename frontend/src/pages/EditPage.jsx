@@ -6,32 +6,26 @@ import {
   UserButton,
   useUser,
 } from "@clerk/clerk-react";
+import { useParams } from "react-router-dom";
 
-export default function CreatePage({ name, messagesArray }) {
+export default function EditPage({ name, messagesArray }) {
   const [messages, setMessages] = useState(messagesArray);
   const [inputMessage, setInputMessage] = useState("");
-  const [isAccountVisible, setIsAccountVisible] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isSignedIn, getToken } = useAuth();
+  const {id} = useParams();
   const user = useUser().user;
-  // Create a ref for the iframe
   const iframeRef = useRef(null);
-
-  const handleAccountClick = () => setIsAccountVisible(true);
-  const handleCloseAccount = () => setIsAccountVisible(false);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
   const saveHtml = async () => {
     const iframe = iframeRef.current;
     const indexResponse = await fetch("/uploads/index.html");
     const indexHtml = await indexResponse.text();
-
     // Improved regex to capture the entire script block
     const scriptMatch = indexHtml.match(
       /window\.editor\.on\("load",[\s\S]*?(?=\s*<\/script>)/
     );
     const editablejs = scriptMatch ? scriptMatch[0] : "";
-
     //console.log("Extracted JS:", editablejs); // Debug log
     // Check if iframe and editor are accessible
     if (iframe && iframe.contentWindow && iframe.contentWindow.editor) {
@@ -142,19 +136,22 @@ export default function CreatePage({ name, messagesArray }) {
         `;
         //  console.log("Constructed Template:", template);
         //   console.log("Constructed EditableTemplate:", template2);
-        console.log("User:", user);
+        console.log("User:", template);
+        console.log("USERRR2" , template2);
 
         // Send the HTML template to the backend
         const response = await fetch("http://localhost:4000/project", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`, // Send the token in the header
+            Authorization: `Bearer ${getToken()}`,
+            "Access-Control-Request-Method": "PUT",
+            "Access-Control-Allow-Origin": "http://localhost:4000"
           },
           body: JSON.stringify({
-            noneditable: template,
-            editablefile: template2,
-            user: user,
+            project_id:id,
+            non_editable_file: template,
+            editable_file: template2,
           }),
         });
 
@@ -174,7 +171,35 @@ export default function CreatePage({ name, messagesArray }) {
       );
     }
   };
-
+  async function fetchData() {
+    try {
+        const token = await getToken();
+      if (!token) {
+        console.error("Failed to fetch token");
+        return;
+      }
+  
+      const response = await fetch(`http://localhost:4000/project/?projectId=${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Send the token in the header
+        },
+      });
+  
+      if (!response.ok) {
+        console.error("Failed to fetch data:", response.statusText);
+        return;
+      }
+  
+      const data = await response.json(); 
+      console.log("Response data:", data); 
+      return data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+  fetchData();
   const enterMessage = (e) => {
     e.preventDefault();
     if (inputMessage.trim() !== "") {
@@ -182,11 +207,9 @@ export default function CreatePage({ name, messagesArray }) {
       setInputMessage("");
     }
   };
-
   if (!isSignedIn) {
     return <RedirectToSignIn />;
   }
-
   return (
     <div className="bg-[#13131f] min-h-screen">
       {/* Navigation */}
