@@ -13,9 +13,14 @@ const main = async () => {
     await mongoose.connect(Environment.MONGODB_URI);
     const app = express();
     app.use(express.json());
-    app.use(cors());
     app.use(bodyParser.json({ limit: "10mb" }));
     app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
+    const corsOptions = {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept']
+    };
+    app.use(cors(corsOptions));
     globalRouterContainer.registerAllRoutes(app)
     app.listen(Environment.PORT, () => {
         logger.info(`Server is running on port ${Environment.PORT}`);
