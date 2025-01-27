@@ -31,8 +31,8 @@ export class ProjectController implements ControllerRegister{
     }
     private updateProject = async (req: express.Request, res: express.Response) => {
         try{
-            const {project_id, editable_file, non_editable_file} = req.body;
-            const project = await this.projectService.updateProject(req.id!, project_id, editable_file, non_editable_file);
+            const {user_id, project_id, editable_file, non_editable_file} = req.body;
+            const project = await this.projectService.updateProject(user_id, project_id, editable_file, non_editable_file);
             return res.status(200).json(project);
         }catch(e){
             handleError(e, res)
@@ -51,7 +51,7 @@ export class ProjectController implements ControllerRegister{
         const router = express.Router();
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.GET, this.getProjects)
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.POST, this.createProject)
-        this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.PUT, this.updateProject)
+        this.object.addControllerWithoutMiddleware(router, "/update", RequestMethodTypes.POST, this.updateProject)
         this.object.addControllerWithAuthMiddleware(router, "/:projectId", RequestMethodTypes.DELETE, this.deleteProject)
         return {
             router: router,

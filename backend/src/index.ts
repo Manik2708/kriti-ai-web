@@ -14,7 +14,9 @@ const main = async () => {
     validateEnvVar();
     await mongoose.connect(Environment.MONGODB_URI);
     const app = express();
-    app.use(express.json());
+    app.use(express.json({
+        limit: "10mb"
+    }));
     app.use(bodyParser.json({ limit: "10mb" }));
     app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
     app.use(cors())
