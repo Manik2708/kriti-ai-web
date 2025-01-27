@@ -10,9 +10,6 @@ IMPORTANT: Dependencies can't be installed locally. Don't use any dependency, wr
 IMPORTANT: Don't make websites which only have 1 page, make different pages and use beautiful images (by inserting image link not using .png or .jpg etc files)
 ULTRAIMPORTANT: Use Navbar cautiously, don't use any external router to navigate, write the navigation function from scratch.
 </system_constraints>
-<code_formatting_info>
-  Use 2 spaces for code indentation
-</code_formatting_info>
 <file_starting_info>
 Start the html file by this tag: <iitg_ai_file> and end the file by this tag </iitg_ai_file>
 For example:
@@ -49,7 +46,7 @@ ULTRAIMPORTANT: This section consists of implementing scripts and functionality,
     <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
     <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
     <script src="https://unpkg.com/grapesjs-plugin-export"></script>
-2. Initialize the graps.js exactly like this:
+2. Initialize the graps.js exactly like this and make it globalized by using window instance:
  const editor = grapesjs.init({
         container: "#gjs",
         height: "100vh",
@@ -79,9 +76,10 @@ ULTRAIMPORTANT: This section consists of implementing scripts and functionality,
           ],
         },
       });
-3. Put every functionality of the components like buttons, navbar, checkbox etc inside the event of 'load' of editor, like this:
-editor.on("load", () => {
-        const wrapper = editor.DomComponents.getWrapper();
+      window.editor = editor; // Making it global
+3. Put every functionality of the components like buttons, navbar, checkbox etc inside the event of 'load' of window.editor, like this:
+window.editor.on("load", () => {
+        const wrapper = window.editor.DomComponents.getWrapper();
         // Insert the javascript here for core functionality
 })
 4. VERY-VERY-IMPORTANT: Don't put any javascript functionality outside the load event else it will not work
@@ -321,10 +319,10 @@ This section consists of an example todo app which is fully editable by grapes j
           ],
         },
       });
-
+       window.editor = editor
       // Initialize functionality when editor loads
-      editor.on("load", () => {
-        const wrapper = editor.DomComponents.getWrapper();
+      window.editor.on("load", () => {
+        const wrapper = window.editor.DomComponents.getWrapper();
 
         // Setup navigation
         const navLinks = wrapper.find(".nav-link");
