@@ -6,6 +6,8 @@ import {handleError} from "../errors/error_handler";
 import {rePrompting} from "../prompts/reprompting";
 import {ControllerTemplateFactory} from "../factories/controller_factory";
 import {RequestMethodTypes} from "./controller_template";
+import {InternalServerError} from "../errors/errors";
+import {MessageStream} from "@anthropic-ai/sdk/lib/MessageStream";
 
 export class PromptController implements ControllerRegister {
     constructor(private readonly client: Anthropic, private readonly object: ControllerTemplateFactory) {}
@@ -27,14 +29,13 @@ export class PromptController implements ControllerRegister {
                 model: 'claude-3-5-sonnet-latest',
                 stream: true
             });
-            stream.on('text', (chunk) => {
-                res.write(chunk);
-            })
+            this.makeResReady(res)
+            this.handleStream(stream, res)
         }catch (e) {
             handleError(e, res)
         }
     }
-    reprompt = async (req: express.Request, res: express.Response) => {
+    private reprompt = async (req: express.Request, res: express.Response) => {
       try {
           const { file, prompt } = req.body;
           const stream = this.client.messages.stream({
@@ -43,11 +44,25 @@ export class PromptController implements ControllerRegister {
               model: 'claude-3-5-sonnet-latest',
               stream: true
           })
-          stream.on('text', (chunk) => {
-              res.write(chunk);
-          })
+          this.makeResReady(res)
+          this.handleStream(stream, res)
       }catch (e) {
           handleError(e, res)
       }
+    }
+    private makeResReady = (res: express.Response) => {
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Transfer-Encoding', 'chunked');
+    }
+    private handleStream = (stream: MessageStream, res: express.Response) => {
+        stream.on('text', (chunk) => {
+            res.write(chunk);
+        })
+        stream.on('end', () => {
+            res.end();
+        })
+        stream.on('error', (error) => {
+            throw new InternalServerError(error.message);
+        })
     }
 }
