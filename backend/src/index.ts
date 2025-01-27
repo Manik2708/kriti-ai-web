@@ -18,6 +18,7 @@ const main = async () => {
     app.use(bodyParser.json({ limit: "10mb" }));
     app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
     app.use(cors())
+    healthCheck(app)
     const client = new Anthropic({
         apiKey: Environment.API_KEY,
     });
@@ -25,6 +26,12 @@ const main = async () => {
     globalRouterContainer.registerAllRoutes(app)
     app.listen(Environment.PORT, () => {
         logger.info(`Server is running on port ${Environment.PORT}`);
+    })
+}
+
+const healthCheck = (app: express.Application) => {
+    app.use("/", (req, res) => {
+        res.status(200).send("OK");
     })
 }
 
