@@ -39,6 +39,9 @@ export class ProjectService implements ProjectServiceFactory {
         const user = await User.findOne({
             clerk_user_id: user_id
         })
+        if (!user) {
+            throw new BadRequestError('User not found');
+        }
         if (project_model.user_id !== user._id.toString()) {
             throw new BadRequestError('You are not the owner of the project');
         }
