@@ -9,9 +9,9 @@ export class Environment {
 }
 
 export const validateEnvVar = () => {
-    // if (!process.env.API_KEY) {
-    //     throw Error("No CLAUD_API_KEY provided");
-    // }
+    if (!process.env.API_KEY) {
+        throw Error("No CLAUD_API_KEY provided");
+    }
     if (!process.env.MONGODB_URI) {
         throw Error("No MongoDB URI provided");
     }

@@ -8,9 +8,17 @@ import {UserController} from "./user";
 import {UserService} from "../services/user";
 import {MessageController} from "./message";
 import {MessageService} from "../services/message";
+import Anthropic from "@anthropic-ai/sdk";
+import {PromptController} from "./prompt";
 
 export class GlobalRouterRegister {
-    constructor(private routers: ControllerRegister[]) {}
+    constructor(private readonly object: ControllerTemplate, private readonly client: Anthropic) {}
+    private routers: ControllerRegister[] = [
+        new UserController(new UserService(), this.object),
+        new ProjectController(new ProjectService(), this.object),
+        new MessageController(new MessageService(), this.object),
+        new PromptController(this.client, this.object),
+    ];
     registerAllRoutes = (app: express.Application) => {
         for (const router of this.routers) {
             const obj = router.registerRouter();
@@ -19,13 +27,3 @@ export class GlobalRouterRegister {
         }
     }
 }
-
-const object = new ControllerTemplate()
-
-const controllers = [
-    new UserController(new UserService(), object),
-    new ProjectController(new ProjectService(), object),
-    new MessageController(new MessageService(), object),
-];
-
-export const globalRouterContainer = new GlobalRouterRegister(controllers);
