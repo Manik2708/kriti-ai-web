@@ -54,7 +54,10 @@ export class ProjectService implements ProjectServiceFactory {
             {
                 new: true
             }
-        )
+        ).populate({
+            path: "messages",
+            select: "-website_content"
+        })
         if (!updated_project) {
             throw new InternalServerError("Project not found");
         }
