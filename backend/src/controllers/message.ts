@@ -10,7 +10,7 @@ export class MessageController implements ControllerRegister {
     registerRouter(): RouterRegistrar {
         const router = express.Router();
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.GET, this.get)
-        this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.POST, this.create)
+        this.object.addControllerWithoutMiddleware(router, "/", RequestMethodTypes.POST, this.create)
         return {
             router: router,
             path: "/message",
