@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   useAuth,
   RedirectToSignIn,
@@ -7,157 +7,158 @@ import {
   useUser,
 } from "@clerk/clerk-react";
 import { useParams } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 
-export default function EditPage({ name, messagesArray }) {
-  const [messages, setMessages] = useState(messagesArray);
+export default function EditPage() {
+  const backend = process.env.REACT_APP_BACKEND_URL;
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [template5, setTemplate5] = useState("");
+  const [editablejs, setEditablejs] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isSignedIn, getToken } = useAuth();
-  const {id} = useParams();
+  const { id } = useParams();
   const user = useUser().user;
   const iframeRef = useRef(null);
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const saveHtml = async () => {
-    const iframe = iframeRef.current;
-    const indexResponse = await fetch("/uploads/index.html");
-    const indexHtml = await indexResponse.text();
-    // Improved regex to capture the entire script block
-    const scriptMatch = indexHtml.match(
+
+  useEffect(() => {
+    const scriptMatch = template5?.match(
       /window\.editor\.on\("load",[\s\S]*?(?=\s*<\/script>)/
     );
-    const editablejs = scriptMatch ? scriptMatch[0] : "";
-    //console.log("Extracted JS:", editablejs); // Debug log
-    // Check if iframe and editor are accessible
+    const editablejava = scriptMatch ? scriptMatch[0] : "";
+    setEditablejs(editablejava);
+  }, [template5]);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const saveHtml = async () => {
+    const iframe = iframeRef.current;
     if (iframe && iframe.contentWindow && iframe.contentWindow.editor) {
       const editor = iframe.contentWindow.editor;
-      //console.log("Editor:", editor);
       try {
-        // Retrieve HTML, CSS, and JS from the editor
         const htmlContent = editor.getHtml();
         const cssContent = editor.getCss();
-        const jsContent = editor.getJs ? editor.getJs() : ""; // Ensure getJs exists
+        const jsContent = editor.getJs ? editor.getJs() : "";
 
-        // Construct the final HTML template
         const template = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        ${cssContent}
-    </style>
-</head>
-<body>
-    ${htmlContent}
-    <script>
-        ${jsContent}
-    </script>
-</body>
-</html>
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Document</title>
+              <style>
+                  ${cssContent}
+              </style>
+          </head>
+          <body>
+              ${htmlContent}
+              <script>
+                  ${jsContent}
+              </script>
+          </body>
+          </html>
         `;
 
         const template2 = `
-        <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Todo App - GrapesJS</title>
-
-    <!-- GrapesJS Core CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.21.10/css/grapes.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css"
-    />
-  </head>
-  <body>
-    <!-- GrapesJS editable area -->
-    <div id="gjs" style="height: 0px; overflow: hidden">
-      <!-- HERE WE CAN PUT THE INSIDE HTML CODE OF GJS WHICH IS STORED IN DATABASE  -->
-      ${htmlContent}
-
-      <!-- Styles -->
-      <style>
-        /* HERE ALL CSS THAT COMES FROM BACKEND SHOULD BE KEPT HERE ONLY DYNAMIC */
-        ${cssContent}
-      </style>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.21.10/grapes.min.js"></script>
-    <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
-    <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
-    <script src="https://unpkg.com/grapesjs-plugin-export"></script>
-
-    <script>
-      // Initialize GrapesJS
-      const editor = grapesjs.init({
-        container: "#gjs",
-        height: "100vh",
-        fromElement: true,
-        storageManager: false,
-        plugins: [
-          "grapesjs-preset-webpage",
-          "gjs-blocks-basic",
-          "grapesjs-plugin-forms",
-          "grapesjs-plugin-export",
-        ],
-        pluginsOpts: {
-          "grapesjs-preset-webpage": {
-            modalImportTitle: "Import Template",
-            modalImportLabel:
-              '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
-            modalImportContent: function (editor) {
-              return (
-                editor.getHtml() + "<style>" + editor.getCss() + "</style>"
-              );
-            },
-          },
-        },
-        canvas: {
-          styles: [
-            "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
-          ],
-        },
-      });
-      window.editor = editor;
-      ${editablejs}
-    </script>
-  </body>
-</html>
+          <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <title>Todo App - GrapesJS</title>
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.21.10/css/grapes.min.css" />
+              <link rel="stylesheet" href="https://unpkg.com/grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css" />
+            </head>
+            <body>
+              <div id="gjs" style="height: 0px; overflow: hidden">
+                ${htmlContent}
+                <style>
+                  ${cssContent}
+                </style>
+              </div>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.21.10/grapes.min.js"></script>
+              <script src="https://unpkg.com/grapesjs-preset-webpage"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+              <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
+              <script src="https://unpkg.com/grapesjs-plugin-forms"></script>
+              <script src="https://unpkg.com/grapesjs-plugin-export"></script>
+              <script>
+                // Initialize GrapesJS
+                const editor = grapesjs.init({
+                  container: "#gjs",
+                  height: "100vh",
+                  fromElement: true,
+                  storageManager: false,
+                  plugins: [
+                    "grapesjs-preset-webpage",
+                    "gjs-blocks-basic",
+                    "grapesjs-plugin-forms",
+                    "grapesjs-plugin-export",
+                  ],
+                  pluginsOpts: {
+                    "grapesjs-preset-webpage": {
+                      modalImportTitle: "Import Template",
+                      modalImportLabel:
+                        '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
+                      modalImportContent: function (editor) {
+                        return (
+                          editor.getHtml() + "<style>" + editor.getCss() + "</style>"
+                        );
+                      },
+                    },
+                  },
+                  canvas: {
+                    styles: [
+                      "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
+                    ],
+                  },
+                });
+                window.editor = editor;
+                ${editablejs}
+              </script>
+            </body>
+          </html>
         `;
-        //  console.log("Constructed Template:", template);
-        //   console.log("Constructed EditableTemplate:", template2);
-        console.log("User:", template);
-        console.log("USERRR2" , template2);
 
-        // Send the HTML template to the backend
-        const response = await fetch("http://localhost:4000/project", {
-          method: "PUT",
+        const back = `${backend}/project/update`;
+
+        const response = await fetch(back, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${getToken()}`,
-            "Access-Control-Request-Method": "PUT",
-            "Access-Control-Allow-Origin": "http://localhost:4000"
           },
           body: JSON.stringify({
-            project_id:id,
+            project_id: id,
             non_editable_file: template,
             editable_file: template2,
+            user_id: user.id,
           }),
         });
+
+        let outputString = "";
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let doneReading = false;
+        while (!doneReading) {
+          const { done, value } = await reader.read();
+          if (done) {
+            doneReading = true;
+            break;
+          }
+          outputString += decoder.decode(value);
+        }
+
+        const object = JSON.parse(outputString);
+        setTemplate5(object.editable_file);
+        setMessages(object.messages);
 
         if (response.ok) {
           alert("HTML saved successfully!");
         } else {
+          console.log("Failed to save HTML:", response);
           alert("Failed to save HTML.");
         }
       } catch (error) {
@@ -171,50 +172,200 @@ export default function EditPage({ name, messagesArray }) {
       );
     }
   };
-  async function fetchData() {
-    try {
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         const token = await getToken();
-      if (!token) {
-        console.error("Failed to fetch token");
-        return;
+        if (!token) {
+          console.error("Failed to fetch token");
+          return;
+        }
+
+        const response = await fetch(`${backend}/project/?projectId=${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          console.error("Failed to fetch data:", response.statusText);
+          return;
+        }
+
+        const data = await response.json();
+        setTemplate5(data.editable_file);
+        setMessages(data.messages);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-  
-      const response = await fetch(`http://localhost:4000/project/?projectId=${id}`, {
-        method: "GET",
+    };
+
+    fetchData();
+  }, [id, getToken]);
+  const fetchPromptResponse = async (message) => {
+    try {
+      const response = await fetch(`${backend}/prompt/reprompt`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Send the token in the header
+          Authorization: `Bearer ${getToken()}`,
         },
+        body: JSON.stringify({
+          file: template5,
+          prompt: message,
+        }),
       });
-  
+
       if (!response.ok) {
-        console.error("Failed to fetch data:", response.statusText);
-        return;
+        throw new Error(`Network response was not ok: ${response.statusText}`);
       }
-  
-      const data = await response.json(); 
-      console.log("Response data:", data); 
-      return data;
+
+      const aidata = await response.text();
+
+      const regex = /<iitg_ai_file>([\s\S]*?)<\/iitg_ai_file>/;
+      const cleanResponse = aidata.replace(regex, "").trim();
+      const match = aidata.match(regex);
+
+      if (match && match[1]) {
+        const aiContent = match[1].trim();
+        return {
+          project_id: id,
+          message: cleanResponse,
+          user_type: "AI",
+          website_content: aiContent,
+        };
+      } else {
+        throw new Error("No content found inside <iitg_ai_file> tags.");
+      }
     } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }
-  fetchData();
-  const enterMessage = (e) => {
-    e.preventDefault();
-    if (inputMessage.trim() !== "") {
-      setMessages([...messages, [1, inputMessage]]);
-      setInputMessage("");
+      console.log("Error fetching AI response:", error);
+      return null;
     }
   };
+  // Refactored fetchAiResponse to return the AI message instead of setting state
+  const fetchAiResponse = async (message) => {
+    try {
+      const response = await fetch(`${backend}/prompt/send`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          prompt: message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+
+      const aidata = await response.text();
+
+      const regex = /<iitg_ai_file>([\s\S]*?)<\/iitg_ai_file>/;
+      const cleanResponse = aidata.replace(regex, "").trim();
+      const match = aidata.match(regex);
+      if (match && match[1]) {
+        const aiContent = match[1].trim();
+        return {
+          project_id: id,
+          message: cleanResponse,
+          user_type: "AI",
+          website_content: aiContent,
+        };
+      } else {
+        throw new Error("No content found inside <iitg_ai_file> tags.");
+      }
+    } catch (error) {
+      console.log("Error fetching AI response:", error);
+      return null;
+    }
+  };
+
+  const enterMessage = async (e) => {
+    e.preventDefault();
+
+    if (inputMessage.trim() !== "") {
+      try {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            project_id: id,
+            message: inputMessage,
+            user_type: "USER",
+            website_content: template5,
+          },
+        ]);
+
+        setInputMessage("");
+
+        setIsLoading(true);
+        let aiResponse = "";
+        if(template5){
+       aiResponse = await fetchPromptResponse(inputMessage);
+      } else{
+       aiResponse =  await fetchAiResponse(inputMessage);
+      }
+        if (aiResponse) {
+          // Append the AI response after the user's message
+          setMessages((prevMessages) => [...prevMessages, aiResponse]);
+          setTemplate5(aiResponse.website_content);
+        } else {
+          throw new Error("AI response is empty or invalid.");
+        }
+
+        const payload = {
+          project_id: id,
+          message: inputMessage,
+          website_content: template5 ? template5 : "Its empty",
+          user_type: "USER",
+        };
+
+        const response = await fetch(`${backend}/message`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        aiResponse.message = aiResponse.message?aiResponse.message:"Here are the changes you suggested to do "
+        console.log(aiResponse);
+        const response2 = await fetch(`${backend}/message`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify(aiResponse),
+        });
+        console.log(response2);
+        if (response.ok && response2.ok) {
+          const responseData = await response.json();
+        } else {
+          console.error("Failed to send message:", response.statusText);
+          alert("Failed to send message. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+        alert("An error occurred while sending the message.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   if (!isSignedIn) {
     return <RedirectToSignIn />;
   }
+
   return (
     <div className="bg-[#13131f] min-h-screen">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 w-full h-16 md:h-20 flex justify-center items-center bg-primary-color border-b border-gray-500/60 z-50">
-        <div className="w-11/12 flex justify-between items-center px-4">
+      <nav className="fixed top-0 left-0 w-full h-11 md:h-16 flex justify-center items-center bg-primary-color border-b border-gray-500/60 z-50">
+        <div className="w-full flex justify-between items-center px-4">
           <div className="flex items-center">
             <h1 className="text-2xl md:text-3xl font-bold text-text-color">
               Web
@@ -254,26 +405,29 @@ export default function EditPage({ name, messagesArray }) {
       <main className="pt-16 md:pt-20 h-[calc(100vh-64px)] md:h-[calc(100vh-80px)]">
         <div className="h-full grid grid-cols-1 md:grid-cols-[400px_1fr] gap-4 p-4">
           {/* Chat Section */}
-          <div className="flex flex-col h-full relative order-2 md:order-1">
+          <div className="flex flex-col min-h-96 scroll-auto relative order-2 md:order-1">
             <div className="flex-grow overflow-y-auto mb-4 pr-2 scrollbar-thin scrollbar-track-[#1c1c28] scrollbar-thumb-[#2a2a3d]">
-              {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`w-[100%] flex ${
-                    message[0] ? "justify-end" : "justify-start"
-                  }`}
-                >
+              {messages &&
+                messages.map((message, index) => (
                   <div
-                    className={`rounded-lg p-3 md:p-4 text-white mb-3 md:mb-4 min-h-[40px] inline-block max-w-[85%] ${
-                      message[0]
-                        ? "bg-[#1e1e2d] text-right"
-                        : "bg-[#2d2351] text-left"
+                    key={index}
+                    className={`w-[100%] flex ${
+                      message.user_type === "USER"
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
-                    {message[1]}
+                    <div
+                      className={`rounded-lg p-3 md:p-4 text-white mb-3 md:mb-4 min-h-[40px] inline-block max-w-[85%] ${
+                        message.user_type === "USER"
+                          ? "bg-[#1e1e2d] text-right"
+                          : "bg-[#2d2351] text-left"
+                      }`}
+                    >
+                      {message.message}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
 
             <div className="sticky bottom-0 bg-[#13131f] pt-2 md:pt-4">
@@ -282,6 +436,7 @@ export default function EditPage({ name, messagesArray }) {
                 onSubmit={enterMessage}
               >
                 <textarea
+                  disabled={isLoading} // Disable during loading
                   className="bg-transparent p-3 md:p-4 h-[45px] text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
                   placeholder="Make a website that..."
                   value={inputMessage}
@@ -289,7 +444,10 @@ export default function EditPage({ name, messagesArray }) {
                 ></textarea>
                 <button
                   type="submit"
-                  className="p-3 md:p-4 text-white hover:text-blue-500 transition-colors duration-200 flex items-center"
+                  disabled={isLoading} // Disable during loading
+                  className={`p-3 md:p-4 text-white hover:text-blue-500 transition-colors duration-200 flex items-center ${
+                    isLoading ? "cursor-not-allowed opacity-50" : ""
+                  }`}
                 >
                   <span>▶</span>
                 </button>
@@ -303,11 +461,16 @@ export default function EditPage({ name, messagesArray }) {
               isSidebarOpen ? "fixed inset-0 z-40 m-4" : "hidden md:block"
             }`}
           >
-            <div className="h-full bg-[#2a2a3d] rounded-lg overflow-hidden">
-              {/* Attach the ref to the iframe */}
+            <div className="h-full bg-[#2a2a3d] rounded-lg overflow-hidden relative">
+              {isLoading && (
+                // Spinner Overlay
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                  <ClipLoader color="#ffffff" size={60} />
+                </div>
+              )}
               <iframe
                 ref={iframeRef}
-                src="/uploads/index.html"
+                srcDoc={template5}
                 frameBorder="0"
                 className="w-full h-full"
                 title="Rendered Preview"
@@ -316,10 +479,13 @@ export default function EditPage({ name, messagesArray }) {
           </div>
         </div>
         {/* Save Button */}
-        <div className="flex justify-center mt-4">
+        <div className="px-4 flex mt-4">
           <button
             onClick={saveHtml}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+            disabled={isLoading} // Optional: Disable during saving
+            className={`bg-blue-500 text-white px-4 py-2 rounded ${
+              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+            }`}
           >
             Save Current State
           </button>

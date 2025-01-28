@@ -5,7 +5,6 @@ import LoginPage from "./components/LoginPage/LoginPage";
 import SignUpPage from './components/SignUp page/SignUp';
 import OTPPage from './components/OtpPage/OTPPage';
 import DashboardPage from "./pages/DashboardPage";
-import NewPage from "./pages/NewPage"
 import EditPage from "./pages/EditPage";
 
 
@@ -19,8 +18,7 @@ const App = () => (
         <Route path="/signup/*" element={<Wrapper CurrentComponent={<SignUpPage />} />} />
         <Route path="/otp/*" element={<Wrapper CurrentComponent={<OTPPage />} />} />
         <Route path="/dashboard" element={<DashboardPage/>} />
-        <Route path="/edit/:id" element={<EditPage messagesArray={[[0,'Welcome, how can I help you?']]} url = '' name = 'mysite' />} />
-        <Route path="/new" element={<NewPage messagesArray={[[0,'Welcome, how can I help you?']]} url = '' name = 'mysite'/>}/>
+        <Route path="/edit/:id" element={<EditPage />} />
       </Routes>
     </Router>
   </ClerkProvider>

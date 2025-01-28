@@ -86,6 +86,8 @@ window.editor.on("load", () => {
 </script_info>
 <example_html_file>
 This section consists of an example todo app which is fully editable by grapes js and fully functional. Take inspirations from this and add proper functionality to the code.
+VERY-VERY-VERY-IMPORTANT: Don't copy the template/style/div/colors. Add your own innovation, make sure that the template of the website is not similar to this website. Only follow the conventions like initializing grapes.js other constraints
+Add your own colors, css etc. by following all the constraints
 <!DOCTYPE html>
 <html lang="en">
   <head>

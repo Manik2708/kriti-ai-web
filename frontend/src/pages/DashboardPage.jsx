@@ -15,10 +15,14 @@ import siteDeployed from "../assets/siteDeployed.svg";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const backend = process.env.REACT_APP_BACKEND_URL;
   const { getToken } = useAuth();
   const { user, isSignedIn } = useUser();
   const navigate = useNavigate();
   const [isAccountVisible, setIsAccountVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
+  const [title, setTitle] = useState(""); // For the title input
+  const [description, setDescription] = useState(""); // For the description input
 
   // Initial hardcoded sites array
   const [sites, setSites] = useState([]);
@@ -43,8 +47,8 @@ const Dashboard = () => {
         console.error("Token could not be fetched or has expired.");
         return;
       }
-
-      const response = await fetch("http://localhost:4000/user", {
+      console.log(backend);
+      const response = await fetch(`${backend}/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,6 +66,7 @@ const Dashboard = () => {
       console.error("Error sending user data:", error);
     }
   };
+  const toggleModal = () => setIsModalVisible((prev) => !prev);
 
   // Function to fetch additional sites from API and append them to the existing array
   const fetchSites = async () => {
@@ -72,7 +77,7 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:4000/user/projects", {
+      const response = await fetch(`${backend}/user/projects`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`, // Attach token for authentication
@@ -124,6 +129,50 @@ const Dashboard = () => {
 
   const deploySiteHandle = () => {
     //Deploy site logic
+  };
+
+  const handleCreateSite = async (title, description) => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        setError("Failed to fetch token. Please try again.");
+        return;
+      }
+
+      // Construct the request body
+      const requestBody = {
+        title: title,
+        description: description,
+        editable: "HELLO",
+        non_editable_file: "WORLD",
+      };
+
+      // Send the POST request
+      const response = await fetch(`${backend}/project`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create the site. Please try again.");
+      }
+
+      const data = await response.json();
+
+      // Use the returned ID to redirect
+      navigate(`/edit/${data._id}`);
+    } catch (err) {
+      console.error("Error creating site:", err);
+      setError("An error occurred while creating the site.");
+    } finally {
+      toggleModal(); // Close the modal after submission
+      setTitle("");
+      setDescription("");
+    }
   };
 
   return (
@@ -229,41 +278,57 @@ const Dashboard = () => {
       </div>
 
       {/* Add Button */}
-      <div className="fixed bottom-20 sm:bottom-8 right-8 z-40">
-        <button
-          onClick={() => navigate("/new")}
-          className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:scale-110 transition-transform duration-200"
-        >
-          <img src={AddCircleIcon} alt="Add" className="w-full h-full" />
-        </button>
-      </div>
+      <button
+        onClick={toggleModal} // Open the modal
+        className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:scale-110 transition-transform duration-200"
+      >
+        <img src={AddCircleIcon} alt="Add" className="w-full h-full" />
+      </button>
 
       {/* Account Modal */}
-      {isAccountVisible && (
-        <div className="fixed top-16 md:top-20 right-0 w-64 h-auto bg-[#3991e33d] backdrop-blur-lg rounded-bl-lg shadow-lg transition-all duration-200">
-          <div className="flex flex-col">
-            <div
-              className="flex justify-end p-4 cursor-pointer"
-              onClick={toggleAccountModal}
-            >
-              <img
-                src={CloseIcon}
-                alt="Close"
-                className="w-6 h-6 md:w-8 md:h-8"
-              />
-            </div>
-            <button className="flex items-center gap-4 px-5 py-4 hover:bg-gray-500/20 transition-colors duration-200">
-              <img
-                src={LogoutIcon}
-                alt="Logout"
-                className="w-6 h-6 md:w-8 md:h-8"
-              />
-              <span className="text-base md:text-lg text-text-color">
-                Logout
-              </span>
-            </button>
-          </div>
-        </div>
+      {isModalVisible && (
+       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+       <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-white font-['Montserrat'] rounded-lg w-96 p-6">
+         <div className="flex justify-between items-center">
+           <h2 className="text-xl font-bold">Create New Site</h2>
+           <button onClick={toggleModal}>
+             <img src={CloseIcon} alt="Close" className="w-6 h-6" />
+           </button>
+         </div>
+         <div className="mt-4">
+           <label className="block text-sm font-medium">Title</label>
+           <input
+             type="text"
+             className="md:w-[90%] md:w-full h-8 text-base md:text-sm bg-transparent border-b border-gray-500 self-center font-['Inter'] text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#5271ff]"
+             value={title}
+             onChange={(e) => setTitle(e.target.value)}
+           />
+         </div>
+         <div className="mt-4">
+           <label className="block text-sm font-medium">Description</label>
+           <textarea
+             className="w-full text-sm border border-gray-400 bg-transparent rounded-lg p-2 mt-1"
+             rows="3"
+             value={description}
+             onChange={(e) => setDescription(e.target.value)}
+           ></textarea>
+         </div>
+         <div className="mt-4 flex justify-end space-x-2">
+           <button
+             onClick={toggleModal}
+             className="w-[35%] md: h-10 text-sm font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+           >
+             Cancel &nbsp; &#9654;
+           </button>
+           <button
+             onClick={() => handleCreateSite(title, description)}
+             className="w-[35%] md: h-10 text-sm font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+           >
+             Continue &nbsp; &#9654;
+           </button>
+         </div>
+       </div>
+     </div>
       )}
     </div>
   );

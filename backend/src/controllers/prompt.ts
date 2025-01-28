@@ -13,7 +13,7 @@ export class PromptController implements ControllerRegister {
     constructor(private readonly client: Anthropic, private readonly object: ControllerTemplateFactory) {}
     registerRouter(): RouterRegistrar {
         const router = express.Router();
-        this.object.addControllerWithAuthMiddleware(router, '/send', RequestMethodTypes.POST, this.send)
+        this.object.addControllerWithoutMiddleware(router, '/send', RequestMethodTypes.POST, this.send)
         this.object.addControllerWithoutMiddleware(router, '/reprompt', RequestMethodTypes.POST, this.reprompt)
         return {
             router: router,

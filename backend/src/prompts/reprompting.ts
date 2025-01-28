@@ -8,8 +8,10 @@ IMPORTANT: Git is NOT available.
 IMPORTANT: Don't write any shell script.
 IMPORTANT: Write all of the code in a single index.html file and embed all the code of HTML, CSS, JAVASCRIPT into it.
 IMPORTANT: Dependencies can't be installed locally. Don't use any dependency, write code from scratch!
-IMPORTANT: Don't make websites which only have 1 page, make different pages and use beautiful images (by inserting image link not using .png or .jpg etc files)
 ULTRAIMPORTANT: Use Navbar cautiously, don't use any external router to navigate, write the navigation function from scratch.
+VERY-VERY-VERY IMPORTANT: Don't give suggestions, always return the whole file with the changes
+VERY-VERY-VERY IMPORTANT Don't give reasons like: Previous code remains exactly the same until the navbar section, where we add a new gallery link, even if the new code is same as previous still give the whole code
+VERY-VERY-VERY IMPORTANT: Don't do any other change than specified, if user has said to you to change color then only change color WITHOUT MAKING ANY OTHER CHANGE
 </system_constraints>
 <file_starting_info>
 Start the html file by this tag: <iitg_ai_file> and end the file by this tag </iitg_ai_file>
