@@ -11,3 +11,19 @@
 .cl-internal-1dauvpw{
     display: none;
 }
+.custom-toast .Toastify__toast-icon svg {
+  fill: #5230B2; /* Your tick icon color */
+}
+
+/* Custom styles for the progress bar */
+.custom-progress {
+  background-color: #5230B2 !important; /* Your desired progress bar color */
+}
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Edge */
+}

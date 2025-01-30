@@ -27,7 +27,9 @@ const Dashboard = () => {
   // Initial hardcoded sites array
   const [sites, setSites] = useState([]);
   const [error, setError] = useState(null);
-
+  useEffect(() => {
+    console.log(sites);
+  }, [sites]);
   // Function to send user data to the backend
   const sendUserDataToBackend = async (user) => {
     if (!user) return;
@@ -99,7 +101,7 @@ const Dashboard = () => {
         status: site.status,
         messages: site.messages,
         projectId: site._id,
-        deployment_link: site.deployment_link || "Not Deployed Yet",
+        deployment_link: site.deployment_link || "",
       }));
 
       // Append the dynamic sites to the existing array
@@ -175,11 +177,23 @@ const Dashboard = () => {
     }
   };
 
+  const deleteSiteHandle  = async (id) =>{
+    const response = await fetch(`${backend}/project/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete the site. Please try again.");
+    }
+  }
   return (
     <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-text-color min-h-screen overflow-x-hidden relative">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 w-full h-16 md:h-20 flex justify-center items-center bg-gradient-to-br from-[#171124] to-[#1c142b] border-b border-gray-500/60 z-50">
-        <div className="w-11/12 max-w-7xl flex justify-between items-center px-4">
+      <nav className="fixed top-0 left-0 w-full h-11 md:h-16 flex justify-center items-center bg-gradient-to-br from-[#171124] to-[#1c142b] border-b border-gray-500/60 z-50">
+        <div className="w-full  flex justify-between items-center px-4">
           <div className="flex items-center">
             <h1 className="text-2xl md:text-3xl font-bold text-text-color">
               Web
@@ -231,48 +245,68 @@ const Dashboard = () => {
       <div className="flex justify-center w-full bg-gradient-to-br from-[#171124] to-[#1c142b] mt-8 px-4">
         <div className="w-full max-w-7xl flex flex-col space-y-6">
           {sites.map((site, index) => (
-            <div className="w-full h-20 flex">
-              <div className="w-11/12 rounded-l-[40px] border flex border-gray-400 px-8 py-2 md:py-2">
-                <div className="w-full">
-                  <h1 className="text-2xl md:text-3xl font-medium font-montserrat text-[var(--text-color)] truncate">
-                    {site.title}
-                  </h1>
-                  <h3 className="text-xs text-gray-400 font-medium mt-1">
-                    {site.deployment_link
-                      ? site.deployment_link
-                      : "Not deployed yet"}
-                  </h3>
-                </div>
-                <div className="w-5/6 flex items-center justify-center">
-                  <p>{site.description}</p>
-                </div>
-              </div>
-              <button
-                className="w-1/12 border border-gray-400 flex justify-center items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-                onClick={() => navigate(`/edit/${site.projectId}`)}
-              >
-                <img
-                  src={editSite}
-                  alt="Edit site"
-                  className="w-6 h-6 md:w-8 md:h-8"
-                />
-              </button>
+            <div className="w-full rounded-[25px] h-17 flex flex-col md:flex-row bg-dashboard-item shadow-custom">
+      {/* Website Name and URL Section */}
+      <div className="w-full px-4 py-2 md:px-8 md:py-4 ">
+        <div className="w-full">
+          <div className="text-lg md:text-2xl font-semibold font-montserrat text-[var(--text-color)] truncate">
+            {site.title}<span className='text-sm font-inter ml-2 font-normal'>{site.deployment_link ? site.deployment_link : " "}</span>
+          </div>
+          <div className="text-sm md:text-base text-gray-400 font-medium">
+          <span className='text-sm font-inter font-normal'>{site.description }</span>
+          </div>
+        </div>
+      </div>
 
-              <div
-                className="w-1/12 border border-gray-400 rounded-r-[40px] flex justify-center items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-                onClick={
-                  site.deployment_link
-                    ? () => console.log("deployed")
-                    : deploySiteHandle
-                }
-              >
-                <img
-                  src={site.deployment_link ? siteDeployed : publishSite}
-                  alt={site.deployment_link ? "Site deployed" : "Publish site"}
-                  className="w-6 h-6 md:w-8 md:h-8"
-                />
-              </div>
-            </div>
+      {/* Last Edited Section */}
+      <div className="w-full md:w-1/12 py-2 md:py-4 border-gray-400 flex flex-col items-center md:flex">
+        <div className="text-sm md:text-base font-montserrat text-gray-400">Last Edited:</div>
+        <div className="text-lg font-montserrat text-500">{site.lastEdited}</div>
+      </div>
+
+      {/* Action Buttons Section (Delete, Edit, Deploy) */}
+      <div className="w-full flex flex-row md:w-1/4 justify-around py-2 md:py-4">
+        {/* Delete Button */}
+        <div
+          className="flex justify-center w-[30%] border-l border-r border-gray-400 items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+          onClick={() => deleteSiteHandle(site.projectId)}
+        >
+          <img
+            src={LogoutIcon}
+            alt="Delete site"
+            className="w-6 h-6 md:w-8 md:h-8"
+          />
+        </div>
+        
+        {/* Edit Button */}
+        <div
+          className="flex justify-center w-[30%] border-r border-gray-400 items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+          onClick={() => navigate(`/edit/${site.projectId}`)}
+        >
+          <img
+            src={editSite}
+            alt="Edit site"
+            className="w-6 h-6 md:w-8 md:h-8"
+          />
+        </div>
+
+        {/* Deploy Button */}
+        <div
+          className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+          onClick={
+            site.deployment_link
+              ? () => console.log("deployed")
+              : deploySiteHandle
+          }
+        >
+          <img
+            src={site.deployment_link ? siteDeployed : publishSite}
+            alt={site.deployment_link ? "Site deployed" : "Publish site"}
+            className="w-6 h-6 md:w-8 md:h-8"
+          />
+        </div>
+      </div>
+    </div>
           ))}
         </div>
       </div>
@@ -299,7 +333,7 @@ const Dashboard = () => {
            <label className="block text-sm font-medium">Title</label>
            <input
              type="text"
-             className="md:w-[90%] md:w-full h-8 text-base md:text-sm bg-transparent border-b border-gray-500 self-center font-['Inter'] text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#5271ff]"
+             className="md:w-[90%] h-8 md:text-sm bg-transparent border-b border-gray-500 self-center font-['Inter'] text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#5271ff]"
              value={title}
              onChange={(e) => setTitle(e.target.value)}
            />

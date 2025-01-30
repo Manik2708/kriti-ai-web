@@ -20,10 +20,13 @@ module.exports = {
       },
       backgroundImage: {
         'gradient-custom': 'linear-gradient(145deg, #171124, #1c142b)',
+        'dashboard-item': 'linear-gradient(145deg, #191227, #150f20)',
       },
       boxShadow: {
-        'custom': '10px 10px 20px #120d1c, -10px -10px 20px #221934',
+        'custom': '5px 5px 6px #100c19, -5px -5px 6px #1e162f',
+        'custom-neumorphic': '-15px -15px 30px #120e1d, 15px 15px 30px #1c142b',
       },
+
     },
   },
   plugins: [],

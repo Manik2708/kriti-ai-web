@@ -8,7 +8,8 @@ import {
 } from "@clerk/clerk-react";
 import { useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 export default function EditPage() {
   const backend = process.env.REACT_APP_BACKEND_URL;
   const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +23,7 @@ export default function EditPage() {
   const user = useUser().user;
   const iframeRef = useRef(null);
 
+
   useEffect(() => {
     const scriptMatch = template5?.match(
       /window\.editor\.on\("load",[\s\S]*?(?=\s*<\/script>)/
@@ -29,9 +31,19 @@ export default function EditPage() {
     const editablejava = scriptMatch ? scriptMatch[0] : "";
     setEditablejs(editablejava);
   }, [template5]);
-
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  const handleSuccess = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 5000,
+      className: "custom-toast",
+      progressClassName: "custom-progress",
+    });
+  };
   const saveHtml = async () => {
     const iframe = iframeRef.current;
     if (iframe && iframe.contentWindow && iframe.contentWindow.editor) {
@@ -156,18 +168,18 @@ export default function EditPage() {
         setMessages(object.messages);
 
         if (response.ok) {
-          alert("HTML saved successfully!");
+          handleSuccess("HTML saved successfully!");
         } else {
           console.log("Failed to save HTML:", response);
-          alert("Failed to save HTML.");
+          handleSuccess("Failed to save HTML.");
         }
       } catch (error) {
         console.error("Error saving HTML:", error);
-        alert("An error occurred while saving.");
+        handleSuccess("An error occurred while saving.");
       }
     } else {
       console.error("Editor not found in iframe");
-      alert(
+      handleSuccess(
         "Editor is not accessible. Please ensure the editor is loaded correctly."
       );
     }
@@ -236,6 +248,7 @@ export default function EditPage() {
           message: cleanResponse,
           user_type: "AI",
           website_content: aiContent,
+          user_id:user.id
         };
       } else {
         throw new Error("No content found inside <iitg_ai_file> tags.");
@@ -275,6 +288,7 @@ export default function EditPage() {
           message: cleanResponse,
           user_type: "AI",
           website_content: aiContent,
+          user_id:user.id
         };
       } else {
         throw new Error("No content found inside <iitg_ai_file> tags.");
@@ -284,7 +298,34 @@ export default function EditPage() {
       return null;
     }
   };
-
+  const handleMessageClk = async (message_id, project_id) => {
+    try {
+      console.log(message_id, project_id);
+      const response = await fetch(`${backend}/message/get`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ project_id, message_id , user_id:user.id }),
+      });
+  
+      // Check if the response is OK (status 200-299)
+      if (!response.ok) {
+        const errorText = await response.text(); // Read response as text
+        throw new Error(`HTTP Error: ${response.status} - ${errorText}`);
+      }
+  
+      // Try parsing JSON, but check if the response has content first
+      const text = await response.text();
+      const responseData = text ? JSON.parse(text) : {}; // Parse only if non-empty
+  
+     setTemplate5(responseData.website_content);
+    } catch (error) {
+      console.error("Error fetching message:", error.message);
+    }
+  };
+  
   const enterMessage = async (e) => {
     e.preventDefault();
 
@@ -304,11 +345,11 @@ export default function EditPage() {
 
         setIsLoading(true);
         let aiResponse = "";
-        if(template5){
-       aiResponse = await fetchPromptResponse(inputMessage);
-      } else{
-       aiResponse =  await fetchAiResponse(inputMessage);
-      }
+        if (template5) {
+          aiResponse = await fetchPromptResponse(inputMessage);
+        } else {
+          aiResponse = await fetchAiResponse(inputMessage);
+        }
         if (aiResponse) {
           // Append the AI response after the user's message
           setMessages((prevMessages) => [...prevMessages, aiResponse]);
@@ -322,6 +363,7 @@ export default function EditPage() {
           message: inputMessage,
           website_content: template5 ? template5 : "Its empty",
           user_type: "USER",
+          user_id:user.id
         };
 
         const response = await fetch(`${backend}/message`, {
@@ -332,7 +374,9 @@ export default function EditPage() {
           },
           body: JSON.stringify(payload),
         });
-        aiResponse.message = aiResponse.message?aiResponse.message:"Here are the changes you suggested to do "
+        aiResponse.message = aiResponse.message
+          ? aiResponse.message
+          : "Here are the changes you suggested to do ";
         console.log(aiResponse);
         const response2 = await fetch(`${backend}/message`, {
           method: "POST",
@@ -347,12 +391,13 @@ export default function EditPage() {
           const responseData = await response.json();
         } else {
           console.error("Failed to send message:", response.statusText);
-          alert("Failed to send message. Please try again.");
+          handleSuccess("Failed to send message. Please try again.");
         }
       } catch (error) {
         console.error("Error sending message:", error);
-        alert("An error occurred while sending the message.");
+        handleSuccess("An error occurred while sending the message.");
       } finally {
+      saveHtml();
         setIsLoading(false);
       }
     }
@@ -366,14 +411,16 @@ export default function EditPage() {
     <div className="bg-[#13131f] min-h-screen">
       <nav className="fixed top-0 left-0 w-full h-11 md:h-16 flex justify-center items-center bg-primary-color border-b border-gray-500/60 z-50">
         <div className="w-full flex justify-between items-center px-4">
-          <div className="flex items-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-text-color">
-              Web
-            </h1>
-            <h1 className="text-2xl md:text-3xl font-bold text-text-color-2">
-              Weaver
-            </h1>
-          </div>
+          <a href="/dashboard">
+            <div className="flex items-center">
+              <h1 className="text-2xl md:text-3xl font-bold text-text-color">
+                Web
+              </h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-text-color-2">
+                Weaver
+              </h1>
+            </div>
+          </a>
           <ul className="flex items-center space-x-4 md:space-x-8">
             <li className="hidden sm:block hover:underline">
               <a href="#" className="text-base md:text-lg text-text-color">
@@ -402,14 +449,14 @@ export default function EditPage() {
         {isSidebarOpen ? "✕" : "👁️"}
       </button>
 
-      <main className="pt-16 md:pt-20 h-[calc(100vh-64px)] md:h-[calc(100vh-80px)]">
+      <main className="pt-16 md:pt-20 h-[calc(110vh-64px)] md:h-[calc(110vh-80px)]">
         <div className="h-full grid grid-cols-1 md:grid-cols-[400px_1fr] gap-4 p-4">
           {/* Chat Section */}
           <div className="flex flex-col min-h-96 scroll-auto relative order-2 md:order-1">
             <div className="flex-grow overflow-y-auto mb-4 pr-2 scrollbar-thin scrollbar-track-[#1c1c28] scrollbar-thumb-[#2a2a3d]">
               {messages &&
                 messages.map((message, index) => (
-                  <div
+                  <button onClick={() => handleMessageClk(message._id , message.project_id)}> <div
                     key={index}
                     className={`w-[100%] flex ${
                       message.user_type === "USER"
@@ -427,6 +474,7 @@ export default function EditPage() {
                       {message.message}
                     </div>
                   </div>
+                  </button>
                 ))}
             </div>
 
@@ -452,6 +500,15 @@ export default function EditPage() {
                   <span>▶</span>
                 </button>
               </form>
+              <div>
+                <button
+                  onClick={saveHtml}
+                  disabled={isLoading}
+                  className="w-[70%] md:w-1/2 ml-[20%] h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-6 md:mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+                >
+                  Save work &nbsp; &#9654;  
+                </button>
+              </div>
             </div>
           </div>
 
@@ -477,8 +534,9 @@ export default function EditPage() {
               ></iframe>
             </div>
           </div>
+          
         </div>
-        {/* Save Button */}
+        {/* Save Button
         <div className="px-4 flex mt-4">
           <button
             onClick={saveHtml}
@@ -489,7 +547,8 @@ export default function EditPage() {
           >
             Save Current State
           </button>
-        </div>
+        </div> */}
+        
       </main>
     </div>
   );
