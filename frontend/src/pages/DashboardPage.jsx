@@ -196,10 +196,10 @@ const Dashboard = () => {
         <div className="w-full  flex justify-between items-center px-4">
           <div className="flex items-center">
             <h1 className="text-2xl md:text-3xl font-bold text-text-color">
-              Web
+              IITG
             </h1>
             <h1 className="text-2xl md:text-3xl font-bold text-text-color-2">
-              Weaver
+              WebPro
             </h1>
           </div>
           <ul className="flex items-center space-x-4 md:space-x-8">
@@ -314,7 +314,7 @@ const Dashboard = () => {
       {/* Add Button */}
       <button
         onClick={toggleModal} // Open the modal
-        className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:scale-110 transition-transform duration-200"
+        className="absolute bottom-10 right-10 z-[2] w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:scale-110 transition-transform duration-200"
       >
         <img src={AddCircleIcon} alt="Add" className="w-full h-full" />
       </button>

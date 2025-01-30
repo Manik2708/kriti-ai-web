@@ -23,16 +23,16 @@ return (
                                         autoplay={{ delay: 2500 }}
                                     >
                                         <SwiperSlide>
-                                            <img src="/images/user-2.jpg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
+                                            <img src="/images/1.jpeg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
                                         </SwiperSlide>
                                         <SwiperSlide>
-                                            <img src="/images/user-3.jpg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
+                                            <img src="/images/2.jpeg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
                                         </SwiperSlide>
                                         <SwiperSlide>
-                                            <img src="/images/user-4.jpg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
+                                            <img src="/images/3.jpg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
                                         </SwiperSlide>
                                         <SwiperSlide>
-                                            <img src="/images/user-5.jpg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
+                                            <img src="/images/4.jpg" alt="img" className="rounded-[15px] w-full h-full object-cover" />
                                         </SwiperSlide>
                                     </Swiper>
                                 </div>
