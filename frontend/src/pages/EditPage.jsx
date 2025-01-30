@@ -22,6 +22,8 @@ export default function EditPage() {
   const { id } = useParams();
   const user = useUser().user;
   const iframeRef = useRef(null);
+  
+  const sendButtonRef = useRef(null);
 
 
   useEffect(() => {
@@ -281,6 +283,7 @@ export default function EditPage() {
       const regex = /<iitg_ai_file>([\s\S]*?)<\/iitg_ai_file>/;
       const cleanResponse = aidata.replace(regex, "").trim();
       const match = aidata.match(regex);
+
       if (match && match[1]) {
         const aiContent = match[1].trim();
         return {
@@ -407,6 +410,13 @@ export default function EditPage() {
     return <RedirectToSignIn />;
   }
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault(); 
+      sendButtonRef.current.click(); 
+    }
+  }
+
   return (
     <div className="bg-[#13131f] min-h-screen">
       <nav className="fixed top-0 left-0 w-full h-11 md:h-16 flex justify-center items-center bg-primary-color border-b border-gray-500/60 z-50">
@@ -414,10 +424,10 @@ export default function EditPage() {
           <a href="/dashboard">
             <div className="flex items-center">
               <h1 className="text-2xl md:text-3xl font-bold text-text-color">
-                Web
+                IITG
               </h1>
               <h1 className="text-2xl md:text-3xl font-bold text-text-color-2">
-                Weaver
+                WebPro
               </h1>
             </div>
           </a>
@@ -456,7 +466,7 @@ export default function EditPage() {
             <div className="flex-grow overflow-y-auto mb-4 pr-2 scrollbar-thin scrollbar-track-[#1c1c28] scrollbar-thumb-[#2a2a3d]">
               {messages &&
                 messages.map((message, index) => (
-                  <button onClick={() => handleMessageClk(message._id , message.project_id)}> <div
+                  <button className="w-full" onClick={() => handleMessageClk(message._id , message.project_id)}> <div
                     key={index}
                     className={`w-[100%] flex ${
                       message.user_type === "USER"
@@ -485,19 +495,21 @@ export default function EditPage() {
               >
                 <textarea
                   disabled={isLoading} // Disable during loading
-                  className="bg-transparent p-3 md:p-4 h-[45px] text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
+                  className="bg-transparent p-3 md:p-4 h-[45px] text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500 overflow-hidden"
                   placeholder="Make a website that..."
                   value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
+                  onChange={(e) =>setInputMessage(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 ></textarea>
                 <button
+                  ref={sendButtonRef} 
                   type="submit"
                   disabled={isLoading} // Disable during loading
                   className={`p-3 md:p-4 text-white hover:text-blue-500 transition-colors duration-200 flex items-center ${
                     isLoading ? "cursor-not-allowed opacity-50" : ""
                   }`}
                 >
-                  <span>▶</span>
+                  <span className="text-2xl">&#10148;</span>
                 </button>
               </form>
               <div>
