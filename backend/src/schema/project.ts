@@ -12,7 +12,7 @@ export interface ProjectModel {
     deployment_link?: string;
     messages: MessageModel[];
     last_edited: Date;
-    deployment_id?: string;
+    deployment_error?: string;
     _doc?: any
 }
 
@@ -57,7 +57,7 @@ const projectSchema = new mongoose.Schema<ProjectModel>({
         required: true,
         default: [],
     }],
-    deployment_id: {
+    deployment_error: {
         type: String,
         default: null,
     }

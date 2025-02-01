@@ -107,6 +107,8 @@ export default function EditPage() {
         editor.store();
         await new Promise((resolve) => setTimeout(resolve, 200)); // Ensure changes apply
         const htmlContent = editor.getHtml();
+        console.log(htmlContent)
+        console.log(htmlContent)
         const cssContent = editor.getCss();
         const jsContent = editor.getJs ? editor.getJs() : "";
 

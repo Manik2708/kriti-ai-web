@@ -2,8 +2,8 @@ import {PubSubFactory} from "../factories/pubsub";
 import EventEmitter from "events";
 import {Project} from "../schema/project";
 import logger from "../logger";
-import {Deployment, DeploymentModel} from "../schema/deployment";
 import {HostingFactory} from "../factories/hosting";
+import {Environment} from "../env";
 
 export class PubSub implements PubSubFactory {
     private static DEPLOY: string = "deploy"
@@ -11,49 +11,31 @@ export class PubSub implements PubSubFactory {
     constructor(private readonly emitter: EventEmitter, private readonly services: HostingFactory) {}
     init(): void {
         this.emitter.on(PubSub.DEPLOY, async (id: string) => {
-            const project = await Project.findById(id)
-            if (!project) {
-                logger.info(`PubSub project ${id} not found`)
-                return
-            }
-            let site_id: string
-            let deploymentModel: DeploymentModel
-            if (project.deployment_id === null || project.deployment_id === undefined) {
+            try{
+                logger.info("Listening on PubSub for Project", id);
+                let project = await Project.findById(id)
+                if (!project) {
+                    logger.info(`PubSub project ${id} not found`)
+                    return
+                }
                 try {
-                    site_id = await this.services.createSite(project.title)
+                    await this.services.deploy(project._id.toString(), project.non_editable_file)
+                    await Project.findByIdAndUpdate(id, {
+                        deployment_link: "https://"+Environment.GITHUB_NAME+".github.io/"+id,
+                        deployment_error: null,
+                        status: 'DEPLOYED',
+                    })
                 }catch(err) {
-                    if (err instanceof Error) {
-                        logger.error(err.message)
-                    }
-                    return
+                    logger.info(`Error while deploying to github pages`, JSON.stringify(err));
+                    await Project.findByIdAndUpdate(id, {
+                        deployment_link: null,
+                        deployment_error: "Can't deploy, please try again",
+                        status: 'NOTDEPLOYED',
+                    })
                 }
-                let deployment = new Deployment({
-                    site_id: site_id,
-                    project_id: project._id.toString(),
-                })
-                deploymentModel = await deployment.save()
-            }else{
-                const deployment = await Deployment.findOne({
-                    project_id: project._id.toString(),
-                })
-                if (!deployment) {
-                    logger.error(`PubSub deployment for project ${id} not found`)
-                    return
-                }
-                deploymentModel = deployment
-                site_id = deployment.site_id
+            }catch(error){
+                logger.error(`PubSub project ${id} error: ${JSON.stringify(error)}`);
             }
-            const jsonContent = project.non_editable_file
-            const content = JSON.parse(jsonContent)
-            const deployedStatus = await this.services.deploy(site_id, content)
-            if (deployedStatus.status != 200) {
-                await Deployment.findByIdAndUpdate(deploymentModel._id, {
-                    error: deployedStatus.message
-                })
-            }
-        })
-        this.emitter.on(PubSub.UNDEPLOY, async (id: string) => {
-
         })
     }
     deploy(id: string): void {

@@ -1,4 +1,6 @@
+import {ProjectModel} from "../schema/project";
+
 export interface DeploymentFactory {
-    deploy(project_id: string): Promise<void>
-    undeploy(project_id: string): Promise<void>
+    deploy(user_id: string, project_id: string): Promise<ProjectModel>
+    undeploy(user_id: string, project_id: string): Promise<ProjectModel>
 }

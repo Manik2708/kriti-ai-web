@@ -6,7 +6,10 @@ export class Environment {
     static API_KEY: string = process.env.API_KEY!;
     static PORT = process.env.PORT == null ? '3000' : process.env.PORT;
     static MONGODB_URI = process.env.MONGODB_URI!;
-    static NETLIFY_TOKEN = process.env.NETLIFY_TOKEN!;
+    static GITHUB_EMAIL = process.env.GITHUB_EMAIL!;
+    static GITHUB_NAME = process.env.GITHUB_NAME!;
+    static GITHUB_BRANCH = process.env.GITHUB_BRANCH!;
+    static GITHUB_TOKEN = process.env.GITHUB_TOKEN!;
 }
 
 export const validateEnvVar = () => {
@@ -22,7 +25,16 @@ export const validateEnvVar = () => {
     if (!process.env.CLERK_SECRET_KEY) {
         throw Error("No CLERK_SECRET_KEY provided");
     }
-    if (!process.env.NETLIFY_TOKEN) {
-        throw Error("No NETLIFY_TOKEN provided");
+    if (!process.env.GITHUB_EMAIL) {
+        throw Error("No GTIHUB_EMAIL provided");
+    }
+    if (!process.env.GITHUB_NAME) {
+        throw Error("No GITHUB_NAME provided");
+    }
+    if (!process.env.GITHUB_BRANCH) {
+        throw Error("No GITHUB_BRANCH provided");
+    }
+    if (!process.env.GITHUB_TOKEN) {
+        throw Error("No GITHUB_TOKEN provided");
     }
 }
