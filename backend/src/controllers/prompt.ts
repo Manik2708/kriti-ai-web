@@ -2,12 +2,12 @@ import {ControllerRegister, RouterRegistrar} from "./controller_register";
 import Anthropic from "@anthropic-ai/sdk";
 import express from "express";
 import {basePrompt} from "../prompts/base_prompt";
-import {handleError} from "../errors/error_handler";
+import {getInternalServerErrorObject, handleError} from "../errors/error_handler";
 import {rePrompting} from "../prompts/reprompting";
 import {ControllerTemplateFactory} from "../factories/controller_factory";
 import {RequestMethodTypes} from "./controller_template";
-import {InternalServerError} from "../errors/errors";
 import {MessageStream} from "@anthropic-ai/sdk/lib/MessageStream";
+import logger from "../logger";
 
 export class PromptController implements ControllerRegister {
     constructor(private readonly client: Anthropic, private readonly object: ControllerTemplateFactory) {}
@@ -62,7 +62,11 @@ export class PromptController implements ControllerRegister {
             res.end();
         })
         stream.on('error', (error) => {
-            throw new InternalServerError(error.message);
+            const err: Error = new Error("AI is not able to produce result")
+            logger.error(error)
+            const object = getInternalServerErrorObject(err)
+            const {statusCode, ...objectWithoutStatusCode} = object;
+            res.end(JSON.stringify(objectWithoutStatusCode));
         })
     }
 }

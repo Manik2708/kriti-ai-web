@@ -9,3 +9,5 @@ backend/coverage
 backend/dist
 node_modules
 package-lock.json
+backend/src/kriti-ai-backend-firebase-adminsdk-fbsvc-b52521c920.json
+

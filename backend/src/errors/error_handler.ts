@@ -9,11 +9,7 @@ export const handleError = (err: unknown, res: express.Response) => {
     }
     let object: ErrorObject
     if (err instanceof BadRequestError) {
-        object = {
-            statusCode: 400,
-            message: "Bad Request!",
-            error: err.message,
-        }
+        object = getBadRequestErrorObject(err)
     }else if (err instanceof UnauthorizedError) {
         object = {
             statusCode: 401,
@@ -21,11 +17,7 @@ export const handleError = (err: unknown, res: express.Response) => {
             error: err.message,
         }
     }else{
-        object = {
-            statusCode: 500,
-            message: "Internal Server error",
-            error: err.message,
-        }
+        object = getInternalServerErrorObject(err)
     }
     const {statusCode, ...message} = object;
     return res.status(statusCode).json(message);
@@ -36,6 +28,14 @@ export const getBadRequestErrorObject = (error: Error): ErrorObject => {
         statusCode: 400,
         error: error.message,
         message: "Bad Request",
+    }
+}
+
+export const getInternalServerErrorObject = (error: Error): ErrorObject => {
+    return {
+        statusCode: 500,
+        error: error.message,
+        message: "Internal Server Error",
     }
 }
 

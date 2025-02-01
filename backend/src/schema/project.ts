@@ -12,6 +12,7 @@ export interface ProjectModel {
     deployment_link?: string;
     messages: MessageModel[];
     last_edited: Date;
+    deployment_id?: string;
     _doc?: any
 }
 
@@ -55,7 +56,11 @@ const projectSchema = new mongoose.Schema<ProjectModel>({
         ref: 'Message',
         required: true,
         default: [],
-    }]
+    }],
+    deployment_id: {
+        type: String,
+        default: null,
+    }
 })
 
 projectSchema.index({ user_id: 'text' });

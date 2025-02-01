@@ -6,6 +6,7 @@ export class Environment {
     static API_KEY: string = process.env.API_KEY!;
     static PORT = process.env.PORT == null ? '3000' : process.env.PORT;
     static MONGODB_URI = process.env.MONGODB_URI!;
+    static NETLIFY_TOKEN = process.env.NETLIFY_TOKEN!;
 }
 
 export const validateEnvVar = () => {
@@ -20,5 +21,8 @@ export const validateEnvVar = () => {
     }
     if (!process.env.CLERK_SECRET_KEY) {
         throw Error("No CLERK_SECRET_KEY provided");
+    }
+    if (!process.env.NETLIFY_TOKEN) {
+        throw Error("No NETLIFY_TOKEN provided");
     }
 }
