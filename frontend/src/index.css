@@ -14,7 +14,12 @@
 .custom-toast .Toastify__toast-icon svg {
   fill: #5230B2; /* Your tick icon color */
 }
-
+.cl-internal-1uc1z6l{
+  display: none;
+}
+.cl-internal-w4f4gh{
+  display: none;
+}
 /* Custom styles for the progress bar */
 .custom-progress {
   background-color: #5230B2 !important; /* Your desired progress bar color */

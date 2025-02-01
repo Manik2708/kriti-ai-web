@@ -105,7 +105,7 @@ const Dashboard = () => {
       }));
 
       // Append the dynamic sites to the existing array
-      setSites((prevSites) => [...prevSites, ...dynamicSites]);
+      setSites(dynamicSites); // Overwrite instead of appending
     } catch (err) {
       console.error("Error fetching sites:", err);
       setError("An error occurred while fetching sites.");
@@ -115,10 +115,12 @@ const Dashboard = () => {
   // Send user data to the backend and fetch sites when user is signed in
   useEffect(() => {
     if (user && isSignedIn) {
-      sendUserDataToBackend(user);
-      fetchSites();
+        setSites([]); // ✅ Fix: Clear state before fetching
+        sendUserDataToBackend(user);
+        fetchSites();
     }
-  }, [user, isSignedIn]);
+}, [user, isSignedIn]);
+
 
   // Handle account modal toggle
   const toggleAccountModal = () => {

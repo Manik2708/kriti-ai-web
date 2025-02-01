@@ -11,7 +11,6 @@ import { ClipLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function EditPage() {
-
   const aiQuotes = [
     "Brewing brilliance for your website...",
     "Crafting your digital masterpiece...",
@@ -32,7 +31,7 @@ export default function EditPage() {
     "Coding with care and precision...",
     "Developing dynamic designs...",
     "Fostering flawless functionality...",
-    "Innovating your internet identity..."
+    "Innovating your internet identity...",
   ];
 
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
@@ -48,7 +47,7 @@ export default function EditPage() {
   const { id } = useParams();
   const user = useUser().user;
   const iframeRef = useRef(null);
-  
+
   const sendButtonRef = useRef(null);
 
   // Effect to handle quote rotation
@@ -69,7 +68,6 @@ export default function EditPage() {
       }
     };
   }, [isLoading, aiQuotes.length]);
-
 
   useEffect(() => {
     const scriptMatch = template5?.match(
@@ -96,6 +94,18 @@ export default function EditPage() {
     if (iframe && iframe.contentWindow && iframe.contentWindow.editor) {
       const editor = iframe.contentWindow.editor;
       try {
+        const wrapper = editor.getWrapper();
+
+        // **Step 1: Toggle a 0.5px CSS change**
+        const currentPadding = wrapper.getStyle()["padding"] || "0px";
+        const newPadding = currentPadding === "0px" ? "0.000000001px" : "0px";
+        wrapper.addStyle({ padding: newPadding });
+
+        console.log("Triggered CSS change: Padding set to", newPadding);
+
+        // **Step 2: Store and get updated HTML**
+        editor.store();
+        await new Promise((resolve) => setTimeout(resolve, 200)); // Ensure changes apply
         const htmlContent = editor.getHtml();
         const cssContent = editor.getCss();
         const jsContent = editor.getJs ? editor.getJs() : "";
@@ -295,7 +305,7 @@ export default function EditPage() {
           message: cleanResponse,
           user_type: "AI",
           website_content: aiContent,
-          user_id:user.id
+          user_id: user.id,
         };
       } else {
         throw new Error("No content found inside <iitg_ai_file> tags.");
@@ -336,7 +346,7 @@ export default function EditPage() {
           message: cleanResponse,
           user_type: "AI",
           website_content: aiContent,
-          user_id:user.id
+          user_id: user.id,
         };
       } else {
         throw new Error("No content found inside <iitg_ai_file> tags.");
@@ -355,25 +365,25 @@ export default function EditPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getToken()}`,
         },
-        body: JSON.stringify({ project_id, message_id , user_id:user.id }),
+        body: JSON.stringify({ project_id, message_id, user_id: user.id }),
       });
-  
+
       // Check if the response is OK (status 200-299)
       if (!response.ok) {
         const errorText = await response.text(); // Read response as text
         throw new Error(`HTTP Error: ${response.status} - ${errorText}`);
       }
-  
+
       // Try parsing JSON, but check if the response has content first
       const text = await response.text();
       const responseData = text ? JSON.parse(text) : {}; // Parse only if non-empty
-  
-     setTemplate5(responseData.website_content);
+
+      setTemplate5(responseData.website_content);
     } catch (error) {
       console.error("Error fetching message:", error.message);
     }
   };
-  
+
   const enterMessage = async (e) => {
     e.preventDefault();
 
@@ -409,9 +419,9 @@ export default function EditPage() {
         const payload = {
           project_id: id,
           message: inputMessage,
-          website_content: template5 ? template5 : "Its empty",
+          website_content: template5 ? template5 : "INITIAL PROMPT",
           user_type: "USER",
-          user_id:user.id
+          user_id: user.id,
         };
 
         const response = await fetch(`${backend}/message`, {
@@ -445,7 +455,7 @@ export default function EditPage() {
         console.error("Error sending message:", error);
         handleSuccess("An error occurred while sending the message.");
       } finally {
-      saveHtml();
+        saveHtml();
         setIsLoading(false);
       }
     }
@@ -457,10 +467,10 @@ export default function EditPage() {
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault(); 
-      sendButtonRef.current.click(); 
+      event.preventDefault();
+      sendButtonRef.current.click();
     }
-  }
+  };
 
   return (
     <div className="bg-[#13131f] min-h-screen">
@@ -511,43 +521,50 @@ export default function EditPage() {
             <div className="flex-grow overflow-y-auto mb-4 pr-2 scrollbar-thin scrollbar-track-[#1c1c28] scrollbar-thumb-[#2a2a3d]">
               {messages &&
                 messages.map((message, index) => (
-                  <button className="w-full" onClick={() => handleMessageClk(message._id , message.project_id)}> <div
-                    key={index}
-                    className={`w-[100%] flex ${
-                      message.user_type === "USER"
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
+                  <button
+                    className="w-full"
+                    onClick={() =>
+                      handleMessageClk(message._id, message.project_id)
+                    }
                   >
+                    {" "}
                     <div
-                      className={`rounded-lg p-3 md:p-4 text-white mb-3 md:mb-4 min-h-[40px] inline-block max-w-[85%] ${
+                      key={index}
+                      className={`w-[100%] flex ${
                         message.user_type === "USER"
-                          ? "bg-[#1e1e2d] text-right"
-                          : "bg-[#2d2351] text-left"
+                          ? "justify-end"
+                          : "justify-start"
                       }`}
                     >
-                      {message.message}
+                      <div
+                        className={`rounded-lg p-3 md:p-4 text-white mb-3 md:mb-4 min-h-[40px] inline-block max-w-[85%] ${
+                          message.user_type === "USER"
+                            ? "bg-[#1e1e2d] text-right"
+                            : "bg-[#2d2351] text-left"
+                        }`}
+                      >
+                        {message.message}
+                      </div>
                     </div>
-                  </div>
                   </button>
                 ))}
             </div>
 
             <div className="sticky bottom-0 bg-[#13131f] pt-2 md:pt-4">
               <form
-                className="bg-[#1e1e2d] rounded-xl flex items-center gap-2"
+                className="bg-[#1e1e2d] h-11 rounded-xl flex items-center gap-2"
                 onSubmit={enterMessage}
               >
                 <textarea
                   disabled={isLoading} // Disable during loading
-                  className="bg-transparent p-3 md:p-4 h-[45px] text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500 overflow-hidden"
+                  className="bg-transparent p-3 md:p-4 h-[55px] outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500 overflow-hidden"
                   placeholder="Make a website that..."
                   value={inputMessage}
-                  onChange={(e) =>setInputMessage(e.target.value)}
+                  onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                 ></textarea>
                 <button
-                  ref={sendButtonRef} 
+                  ref={sendButtonRef}
                   type="submit"
                   disabled={isLoading} // Disable during loading
                   className={`p-3 md:p-4 text-white hover:text-blue-500 transition-colors duration-200 flex items-center ${
@@ -566,7 +583,7 @@ export default function EditPage() {
                   Save work &nbsp; &#9654;  
                 </button>
                 <button
-                  onClick={()=>window.location.reload()}
+                  onClick={() => window.location.reload()}
                   disabled={isLoading}
                   className="w-[70%] md:w-1/2 ml-[20%] h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-6 md:mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
                 >
@@ -601,7 +618,6 @@ export default function EditPage() {
               ></iframe>
             </div>
           </div>
-          
         </div>
         {/* Save Button
         <div className="px-4 flex mt-4">
@@ -615,7 +631,6 @@ export default function EditPage() {
             Save Current State
           </button>
         </div> */}
-        
       </main>
     </div>
   );
