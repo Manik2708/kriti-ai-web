@@ -8,7 +8,6 @@ export class Environment {
     static MONGODB_URI = process.env.MONGODB_URI!;
     static GITHUB_EMAIL = process.env.GITHUB_EMAIL!;
     static GITHUB_NAME = process.env.GITHUB_NAME!;
-    static GITHUB_BRANCH = process.env.GITHUB_BRANCH!;
     static GITHUB_TOKEN = process.env.GITHUB_TOKEN!;
 }
 
@@ -26,13 +25,10 @@ export const validateEnvVar = () => {
         throw Error("No CLERK_SECRET_KEY provided");
     }
     if (!process.env.GITHUB_EMAIL) {
-        throw Error("No GTIHUB_EMAIL provided");
+        throw Error("No GITHUB_EMAIL provided");
     }
     if (!process.env.GITHUB_NAME) {
         throw Error("No GITHUB_NAME provided");
-    }
-    if (!process.env.GITHUB_BRANCH) {
-        throw Error("No GITHUB_BRANCH provided");
     }
     if (!process.env.GITHUB_TOKEN) {
         throw Error("No GITHUB_TOKEN provided");

@@ -86,7 +86,7 @@ export class HostingServices implements HostingFactory {
                     owner: Environment.GITHUB_NAME,
                     repo: project_id,
                     source: {
-                        branch: Environment.GITHUB_BRANCH,
+                        branch: "main",
                         path: `/`
                     },
                     headers: {
