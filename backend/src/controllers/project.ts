@@ -52,7 +52,7 @@ export class ProjectController implements ControllerRegister{
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.GET, this.getProjects)
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.POST, this.createProject)
         this.object.addControllerWithoutMiddleware(router, "/update", RequestMethodTypes.POST, this.updateProject)
-        this.object.addControllerWithoutMiddleware(router, "/:projectId", RequestMethodTypes.DELETE, this.deleteProject)
+        this.object.addControllerWithAuthMiddleware(router, "/:projectId", RequestMethodTypes.DELETE, this.deleteProject)
         return {
             router: router,
             path: '/project'

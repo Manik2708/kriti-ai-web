@@ -71,4 +71,10 @@ describe('ProjectController', () => {
         expect(called).toBeCalledTimes(1)
         expect(called).toBeCalledWith(mockUserId, "mockprojectid")
     })
+    it("Delete", async () => {
+        const called = jest.spyOn(mockProjectService, "deleteProject")
+        await request(app).delete("/project/mockprojectid").expect(200)
+        expect(called).toBeCalledTimes(1)
+        expect(called).toBeCalledWith(mockUserId, "mockprojectid")
+    })
 })
