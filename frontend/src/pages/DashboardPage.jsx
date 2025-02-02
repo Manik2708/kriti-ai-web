@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link} from "react-router-dom";
 import {
   useUser,
   RedirectToSignIn,
@@ -205,14 +206,9 @@ const Dashboard = () => {
           </div>
           <ul className="flex items-center space-x-4 md:space-x-8">
             <li className="hidden sm:block hover:underline">
-              <a href="#" className="text-base md:text-lg text-text-color">
+              <Link to="/about" className="text-base md:text-lg text-text-color">
                 About Us
-              </a>
-            </li>
-            <li className="hidden sm:block hover:underline">
-              <a href="#" className="text-base md:text-lg text-text-color">
-                Contact
-              </a>
+              </Link>
             </li>
             <li className="cursor-pointer">
               <SignedIn>
@@ -315,7 +311,7 @@ const Dashboard = () => {
       {/* Add Button */}
       <button
         onClick={toggleModal} // Open the modal
-        className="absolute bottom-10 right-10 z-[2] w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:scale-110 transition-transform duration-200"
+        className="fixed bottom-10 right-10 z-[2] w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full hover:scale-110 transition-transform duration-200"
       >
         <img src={AddCircleIcon} alt="Add" className="w-full h-full" />
       </button>

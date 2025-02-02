@@ -7,6 +7,7 @@ import EditPage from "./pages/EditPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { dark } from "@clerk/themes";
+import AboutUs from "./pages/AbooutUs";
 const clerkPublishableKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 const App = () => (
   <ClerkProvider
@@ -19,6 +20,7 @@ const App = () => (
       <Route path="/" element={<Wrapper CurrentComponent={<LoginPage />} />} />
         <Route path="/dashboard" element={<DashboardPage/>} />
         <Route path="/edit/:id" element={<EditPage />} />
+        <Route path="/about" element={<AboutUs />} />
       </Routes>
       <ToastContainer
         position="top-right"
