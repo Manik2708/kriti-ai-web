@@ -32,7 +32,7 @@ ULTRAIMPORTANT: Load only these cdns without changing the links and versions:
     />
 </grapesjs_css>
 <grapesjs_style>
-Add this styling for coloring of grapes.js dashboard. Never ever change this styling. Always keep this same in style tag:
+ULTRAIMPORTANT:Add this styling for coloring of grapes.js dashboard. Never ever change this styling. Always keep this same in style tag:
 .gjs-one-bg {
     background-color: #1a0f23 !important; /* Deep Dark Purple */
 }

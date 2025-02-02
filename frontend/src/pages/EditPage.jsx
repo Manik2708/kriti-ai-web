@@ -35,7 +35,7 @@ export default function EditPage() {
     "Fostering flawless functionality...",
     "Innovating your internet identity...",
   ];
-
+  const [editorReady, setEditorReady] = useState(false);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [projectData, setProjectData] = useState({});
   const backend = process.env.REACT_APP_BACKEND_URL;
@@ -49,9 +49,7 @@ export default function EditPage() {
   const { id } = useParams();
   const user = useUser().user;
   const iframeRef = useRef(null);
-
   const sendButtonRef = useRef(null);
-
   // Effect to handle quote rotation
   useEffect(() => {
     let quoteInterval;
@@ -91,8 +89,28 @@ export default function EditPage() {
       progressClassName: "custom-progress",
     });
   };
+  const handleIframeLoad = () => {
+    if (
+      iframeRef.current &&
+      iframeRef.current.contentWindow &&
+      iframeRef.current.contentWindow.editor
+    ) {
+      setEditorReady(true);
+    } else {
+      // Optionally, you can set it to false or leave it as is.
+      setEditorReady(false);
+    }
+  };
+  
   const saveHtml = async () => {
+    if (!editorReady) {
+      console.log("Editor not yet accessible. Waiting...");
+      // Optionally, you can wait a bit and try again instead of showing an error.
+      return;
+    }
     const iframe = iframeRef.current;
+    const test = iframe && iframe.contentWindow && iframe.contentWindow.editor;
+    console.log(test);
     if (iframe && iframe.contentWindow && iframe.contentWindow.editor) {
       const editor = iframe.contentWindow.editor;
       try {
@@ -240,9 +258,9 @@ export default function EditPage() {
       }
     } else {
       console.error("Editor not found in iframe");
-      handleSuccess(
-        "Editor is not accessible. Please ensure the editor is loaded correctly."
-      );
+      // handleSuccess(
+      //   "Editor is not accessible. Please ensure the editor is loaded correctly."
+      // );
     }
   };
 
@@ -507,7 +525,7 @@ export default function EditPage() {
         toast.error("Deployment failed: " + data.deployment_error);
       } else {
         toast.success("Site deployed successfully!");
-        toast.info(`"Live on Dashboard!" 🚀`);
+        toast.info(`Your live link awaits on the Dashboard.`);
       }
     } catch (error) {
       console.error("Error deploying site:", error);
@@ -687,6 +705,7 @@ export default function EditPage() {
                 frameBorder="0"
                 className="w-full h-full"
                 title="Rendered Preview"
+                onLoad={handleIframeLoad}
               ></iframe>
             </div>
           </div>

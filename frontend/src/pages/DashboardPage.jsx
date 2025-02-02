@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   useUser,
   RedirectToSignIn,
@@ -14,6 +14,7 @@ import editSite from "../assets/editSite.svg";
 import publishSite from "../assets/publishSite.svg";
 import siteDeployed from "../assets/siteDeployed.svg";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const backend = process.env.REACT_APP_BACKEND_URL;
@@ -136,14 +137,14 @@ const Dashboard = () => {
     try {
       const token = await getToken();
       if (!token) return;
-  
+
       // Immediately update the site status to "DEPLOYING"
       setSites((prevSites) =>
         prevSites.map((site) =>
           site.projectId === projectId ? { ...site, status: "DEPLOYING" } : site
         )
       );
-  
+
       const response = await fetch(`${backend}/deploy`, {
         method: "POST",
         headers: {
@@ -152,9 +153,9 @@ const Dashboard = () => {
         },
         body: JSON.stringify({ project_id: projectId }),
       });
-  
+
       const data = await response.json();
-  
+
       // Update the corresponding site with the new deployment data
       setSites((prevSites) =>
         prevSites.map((site) => {
@@ -169,7 +170,7 @@ const Dashboard = () => {
           return site;
         })
       );
-  
+
       // If deployment succeeded (i.e. valid link and no error), open it in a new tab
       if (data.deployment_link && !data.deployment_error) {
         window.open(data.deployment_link, "_blank");
@@ -178,7 +179,6 @@ const Dashboard = () => {
       console.error("Error deploying site:", error);
     }
   };
-  
 
   const handleCreateSite = async (title, description) => {
     try {
@@ -225,16 +225,19 @@ const Dashboard = () => {
   };
 
   const deleteSiteHandle = async (id) => {
-    const response = await fetch(`${backend}/project/${id}`, {
-      method: "DELETE",
+    const response = await fetch(`${backend}/project/delete`, {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
       },
+      body: JSON.stringify({ project_id: id, user_id: user.id })
     });
+    
     if (!response.ok) {
       throw new Error("Failed to delete the site. Please try again.");
-    } else{
+    } else {
+      toast.info("Project deleted successfully");
+      await new Promise((resolve) => setTimeout(resolve, 5000)); 
       window.location.reload();
     }
   };
@@ -253,7 +256,10 @@ const Dashboard = () => {
           </div>
           <ul className="flex items-center space-x-4 md:space-x-8">
             <li className="hidden sm:block hover:underline">
-              <Link to="/about" className="text-base md:text-lg text-text-color">
+              <Link
+                to="/about"
+                className="text-base md:text-lg text-text-color"
+              >
                 About Us
               </Link>
             </li>
@@ -304,14 +310,12 @@ const Dashboard = () => {
                   <div className="text-lg md:text-2xl font-semibold font-montserrat text-[var(--text-color)] truncate">
                     {site.title}
                     <span className="text-sm font-inter ml-2 font-normal">
-  {site.status === "DEPLOYING"
-    ? "Deploying"
-    : site.deployment_link && !site.deployment_error
-    ? "Deployed"
-    : "Not deployed"}
-</span>
-
-
+                      {site.status === "DEPLOYING"
+                        ? "Deploying"
+                        : site.deployment_link && !site.deployment_error
+                        ? "Deployed"
+                        : "Not deployed"}
+                    </span>
                   </div>
                   <div className="text-sm md:text-base text-gray-400 font-medium">
                     <span className="text-sm font-inter font-normal">
@@ -357,26 +361,27 @@ const Dashboard = () => {
 
                 {/* Deploy Button */}
                 <div
-  className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-  onClick={() => {
-    if (
-      site.deployment_link &&
-      !site.deployment_error &&
-      site.status !== "DEPLOYING"
-    ) {
-      window.open(site.deployment_link, "_blank");
-    } else {
-      deploySiteHandle(site.projectId);
-    }
-  }}
->
-  <img
-    src={site.deployment_link ? siteDeployed : publishSite}
-    alt={site.deployment_link ? "Site deployed" : "Publish site"}
-    className="w-6 h-6 md:w-8 md:h-8"
-  />
-</div>
-
+                  className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+                  onClick={() => {
+                    if (
+                      site.deployment_link &&
+                      !site.deployment_error &&
+                      site.status !== "DEPLOYING"
+                    ) {
+                      window.open(site.deployment_link, "_blank");
+                    } else {
+                      deploySiteHandle(site.projectId);
+                    }
+                  }}
+                >
+                  <img
+                    src={site.deployment_link ? siteDeployed : publishSite}
+                    alt={
+                      site.deployment_link ? "Site deployed" : "Publish site"
+                    }
+                    className="w-6 h-6 md:w-8 md:h-8"
+                  />
+                </div>
               </div>
                   
             </div>
