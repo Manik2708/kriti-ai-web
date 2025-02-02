@@ -71,4 +71,10 @@ window.editor.on("load", () => {
 })
 7. VERY-VERY-IMPORTANT: Don't put any javascript functionality outside the load event else it will not work
 </grapesjs_constraints>
+<very_important_info>
+I am again explaining this important info, follow all these points. Never ever ignore this:
+VERY-VERY-VERY IMPORTANT: Don't give suggestions, always return the whole file with the changes
+VERY-VERY-VERY IMPORTANT Don't give reasons like: Previous code remains exactly the same until the navbar section, where we add a new gallery link, even if the new code is same as previous still give the whole code
+VERY-VERY-VERY IMPORTANT: Don't do any other change than specified, if user has said to you to change color then only change color WITHOUT MAKING ANY OTHER CHANGE
+</very_important_info>
 `
