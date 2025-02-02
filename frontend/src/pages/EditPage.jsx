@@ -529,6 +529,7 @@ export default function EditPage() {
               {messages &&
                 messages.map((message, index) => (
                   <button
+                  disabled={isLoading}
                     className="w-full"
                     onClick={() =>
                       handleMessageClk(message._id, message.project_id)
@@ -559,12 +560,12 @@ export default function EditPage() {
 
             <div className="sticky bottom-0 bg-[#13131f] pt-2 md:pt-4">
               <form
-                className="bg-[#1e1e2d] h-11 rounded-xl flex items-center gap-2"
+                className="bg-[#1e1e2d] h-11 overflow-hidden rounded-xl flex items-center gap-2"
                 onSubmit={enterMessage}
               >
                 <textarea
                   disabled={isLoading} // Disable during loading
-                  className="bg-transparent p-3 md:p-4 h-[55px] overflow-auto outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
+                  className="bg-transparent p-3 md:p-4 h-[55px] outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
                   placeholder="Make a website that..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}

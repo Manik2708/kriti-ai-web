@@ -191,6 +191,17 @@ const Dashboard = () => {
       throw new Error("Failed to delete the site. Please try again.");
     }
   };
+  const handleDeploymentclick = (id) => {
+    // const response = fetch(`${backend}/deploy`, {,
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${getToken()}`,
+    //   },
+    //   body: JSON.stringify({ project_id: id }),
+    // },
+    console.log(id);
+  };
   return (
     <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-text-color min-h-screen overflow-x-hidden relative">
       {/* Navigation */}
@@ -256,8 +267,8 @@ const Dashboard = () => {
                 <div className="w-full">
                   <div className="text-lg md:text-2xl font-semibold font-montserrat text-[var(--text-color)] truncate">
                     {site.title}
-                    <span className="text-sm font-inter ml-2 font-normal">
-                      {site.deployment_link ? site.deployment_link : " "}
+                    <span className="text-sm font-inter ml-2 font-normal" onClick={() => handleDeploymentclick(site.projectId)}>
+                      {site.deployment_link ? "View Deployed site" : " Not deployed Yet"}
                     </span>
                   </div>
                   <div className="text-sm md:text-base text-gray-400 font-medium">
