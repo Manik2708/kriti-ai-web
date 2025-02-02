@@ -7,7 +7,6 @@ import {
   useAuth,
 } from "@clerk/clerk-react";
 import AddCircleIcon from "../assets/addIcon.svg";
-import CloseIcon from "../assets/addIcon.svg";
 import LogoutIcon from "../assets/logOut.svg";
 import editSite from "../assets/editSite.svg";
 import publishSite from "../assets/publishSite.svg";
@@ -327,9 +326,9 @@ const Dashboard = () => {
        <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-white font-['Montserrat'] rounded-lg w-96 p-6">
          <div className="flex justify-between items-center">
            <h2 className="text-xl font-bold">Create New Site</h2>
-           <button onClick={toggleModal}>
+           {/* <button onClick={toggleModal}>
              <img src={CloseIcon} alt="Close" className="w-6 h-6" />
-           </button>
+           </button> */}
          </div>
          <div className="mt-4">
            <label className="block text-sm font-medium">Title</label>

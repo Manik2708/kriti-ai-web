@@ -8,7 +8,7 @@ import {
 } from "@clerk/clerk-react";
 import { useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 export default function EditPage() {
   const aiQuotes = [
@@ -448,7 +448,7 @@ export default function EditPage() {
         });
         console.log(response2);
         if (response.ok && response2.ok) {
-          const responseData = await response.json();
+         // const responseData = await response.json();
         } else {
           console.error("Failed to send message:", response.statusText);
           handleSuccess("Failed to send message. Please try again.");
@@ -559,7 +559,7 @@ export default function EditPage() {
               >
                 <textarea
                   disabled={isLoading} // Disable during loading
-                  className="bg-transparent p-3 md:p-4 h-[55px] outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500 overflow-hidden"
+                  className="bg-transparent p-3 md:p-4 h-[55px] overflow-auto outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
                   placeholder="Make a website that..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
