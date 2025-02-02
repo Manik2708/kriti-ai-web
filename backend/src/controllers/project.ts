@@ -40,8 +40,8 @@ export class ProjectController implements ControllerRegister{
     }
     private deleteProject = async (req: express.Request, res: express.Response) => {
         try{
-            const {projectId} = req.params;
-            const project = await this.projectService.deleteProject(req.id!, projectId);
+            const {user_id, project_id} = req.body;
+            const project = await this.projectService.deleteProject(user_id, project_id);
             return res.status(200).json(project);
         }catch(e){
             handleError(e, res)
@@ -52,7 +52,7 @@ export class ProjectController implements ControllerRegister{
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.GET, this.getProjects)
         this.object.addControllerWithAuthMiddleware(router, "/", RequestMethodTypes.POST, this.createProject)
         this.object.addControllerWithoutMiddleware(router, "/update", RequestMethodTypes.POST, this.updateProject)
-        this.object.addControllerWithAuthMiddleware(router, "/:projectId", RequestMethodTypes.DELETE, this.deleteProject)
+        this.object.addControllerWithoutMiddleware(router, "/delete", RequestMethodTypes.POST, this.deleteProject)
         return {
             router: router,
             path: '/project'
