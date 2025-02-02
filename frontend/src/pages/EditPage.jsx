@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link} from "react-router-dom";
 import {
   useAuth,
   RedirectToSignIn,
@@ -477,23 +478,21 @@ export default function EditPage() {
 
   return (
     <div className="bg-[#13131f] min-h-screen">
-      <nav className="fixed top-0 left-0 w-full h-11 md:h-16 flex justify-center items-center bg-primary-color border-b border-gray-500/60 z-50">
-        <div className="w-full flex justify-between items-center px-4">
-          <a href="/dashboard">
-            <div className="flex items-center">
-              <h1 className="text-2xl md:text-3xl font-bold text-text-color">
-                IITG
-              </h1>
-              <h1 className="text-2xl md:text-3xl font-bold text-text-color-2">
-                WebPro
-              </h1>
-            </div>
-          </a>
+      <nav className="fixed top-0 left-0 w-full h-11 md:h-16 flex justify-center items-center bg-gradient-to-br from-[#171124] to-[#1c142b] border-b border-gray-500/60 z-50">
+        <div className="w-full  flex justify-between items-center px-4">
+          <div className="flex items-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-text-color">
+              IITG
+            </h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-text-color-2">
+              WebPro
+            </h1>
+          </div>
           <ul className="flex items-center space-x-4 md:space-x-8">
             <li className="hidden sm:block hover:underline">
-              <a href="#" className="text-base md:text-lg text-text-color">
+              <Link to="/about" className="text-base md:text-lg text-text-color">
                 About Us
-              </a>
+              </Link>
             </li>
             <li className="cursor-pointer">
               <SignedIn>
@@ -565,7 +564,7 @@ export default function EditPage() {
               >
                 <textarea
                   disabled={isLoading} // Disable during loading
-                  className="bg-transparent p-3 md:p-4 h-[55px] outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
+                  className="bg-transparent p-3 md:p-4 h-[55px] overflow-auto outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
                   placeholder="Make a website that..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}

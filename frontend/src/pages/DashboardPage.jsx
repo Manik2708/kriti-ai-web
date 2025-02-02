@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link} from "react-router-dom";
 import {
   useUser,
   RedirectToSignIn,
@@ -217,9 +218,9 @@ const Dashboard = () => {
           </div>
           <ul className="flex items-center space-x-4 md:space-x-8">
             <li className="hidden sm:block hover:underline">
-              <a href="#" className="text-base md:text-lg text-text-color">
+              <Link to="/about" className="text-base md:text-lg text-text-color">
                 About Us
-              </a>
+              </Link>
             </li>
             <li className="cursor-pointer">
               <SignedIn>

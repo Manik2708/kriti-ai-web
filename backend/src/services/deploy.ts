@@ -14,8 +14,14 @@ export class DeploymentService implements DeploymentFactory {
             throw new UnauthorizedError("You are not the owner of this project")
         }
         project = await Project.findByIdAndUpdate(project_id, {
-            status: "DEPLOYING"
-        })
+            $set: {
+                status: "DEPLOYING"
+            },
+        },
+            {
+                new: true
+            }
+        ).select(["-editable_file", "-non_editable_file"])
         if (!project) {
             throw new InternalServerError(`Project with id ${project_id} not found`)
         }
