@@ -132,9 +132,53 @@ const Dashboard = () => {
     return <RedirectToSignIn />;
   }
 
-  const deploySiteHandle = () => {
-    //Deploy site logic
+  const deploySiteHandle = async (projectId) => {
+    try {
+      const token = await getToken();
+      if (!token) return;
+  
+      // Immediately update the site status to "DEPLOYING"
+      setSites((prevSites) =>
+        prevSites.map((site) =>
+          site.projectId === projectId ? { ...site, status: "DEPLOYING" } : site
+        )
+      );
+  
+      const response = await fetch(`${backend}/deploy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ project_id: projectId }),
+      });
+  
+      const data = await response.json();
+  
+      // Update the corresponding site with the new deployment data
+      setSites((prevSites) =>
+        prevSites.map((site) => {
+          if (site.projectId === projectId) {
+            return {
+              ...site,
+              status: data.status,
+              deployment_link: data.deployment_link,
+              deployment_error: data.deployment_error,
+            };
+          }
+          return site;
+        })
+      );
+  
+      // If deployment succeeded (i.e. valid link and no error), open it in a new tab
+      if (data.deployment_link && !data.deployment_error) {
+        window.open(data.deployment_link, "_blank");
+      }
+    } catch (error) {
+      console.error("Error deploying site:", error);
+    }
   };
+  
 
   const handleCreateSite = async (title, description) => {
     try {
@@ -190,18 +234,9 @@ const Dashboard = () => {
     });
     if (!response.ok) {
       throw new Error("Failed to delete the site. Please try again.");
+    } else{
+      window.location.reload();
     }
-  };
-  const handleDeploymentclick = (id) => {
-    // const response = fetch(`${backend}/deploy`, {,
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${getToken()}`,
-    //   },
-    //   body: JSON.stringify({ project_id: id }),
-    // },
-    console.log(id);
   };
   return (
     <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-text-color min-h-screen overflow-x-hidden relative">
@@ -268,9 +303,15 @@ const Dashboard = () => {
                 <div className="w-full">
                   <div className="text-lg md:text-2xl font-semibold font-montserrat text-[var(--text-color)] truncate">
                     {site.title}
-                    <span className="text-sm font-inter ml-2 font-normal" onClick={() => handleDeploymentclick(site.projectId)}>
-                      {site.deployment_link ? "View Deployed site" : " Not deployed Yet"}
-                    </span>
+                    <span className="text-sm font-inter ml-2 font-normal">
+  {site.status === "DEPLOYING"
+    ? "Deploying"
+    : site.deployment_link && !site.deployment_error
+    ? "Deployed"
+    : "Not deployed"}
+</span>
+
+
                   </div>
                   <div className="text-sm md:text-base text-gray-400 font-medium">
                     <span className="text-sm font-inter font-normal">
@@ -316,21 +357,26 @@ const Dashboard = () => {
 
                 {/* Deploy Button */}
                 <div
-                  className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-                  onClick={
-                    site.deployment_link
-                      ? () => console.log("deployed")
-                      : deploySiteHandle
-                  }
-                >
-                  <img
-                    src={site.deployment_link ? siteDeployed : publishSite}
-                    alt={
-                      site.deployment_link ? "Site deployed" : "Publish site"
-                    }
-                    className="w-6 h-6 md:w-8 md:h-8"
-                  />
-                </div>
+  className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+  onClick={() => {
+    if (
+      site.deployment_link &&
+      !site.deployment_error &&
+      site.status !== "DEPLOYING"
+    ) {
+      window.open(site.deployment_link, "_blank");
+    } else {
+      deploySiteHandle(site.projectId);
+    }
+  }}
+>
+  <img
+    src={site.deployment_link ? siteDeployed : publishSite}
+    alt={site.deployment_link ? "Site deployed" : "Publish site"}
+    className="w-6 h-6 md:w-8 md:h-8"
+  />
+</div>
+
               </div>
                   
             </div>

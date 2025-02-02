@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   useAuth,
   RedirectToSignIn,
@@ -37,7 +37,7 @@ export default function EditPage() {
   ];
 
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
-
+  const [projectData, setProjectData] = useState({});
   const backend = process.env.REACT_APP_BACKEND_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -269,6 +269,7 @@ export default function EditPage() {
         }
 
         const data = await response.json();
+        setProjectData(data);
         setTemplate5(data.editable_file);
         setMessages(data.messages);
       } catch (error) {
@@ -475,6 +476,47 @@ export default function EditPage() {
       sendButtonRef.current.click();
     }
   };
+  const deploySiteHandle = async () => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        toast.error("Failed to retrieve authentication token.");
+        return;
+      }
+
+      // Optional: set loading state if you want to disable UI elements while deploying.
+      setIsLoading(true);
+
+      // Show a toast message that deployment has started.
+      toast.info("Deploying site...");
+
+      // Send the deployment request.
+      const response = await fetch(`${backend}/deploy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ project_id: id }),
+      });
+
+      const data = await response.json();
+
+      // Check for deployment errors.
+      if (data.deployment_error) {
+        toast.error("Deployment failed: " + data.deployment_error);
+      } else {
+        toast.success("Site deployed successfully!");
+        toast.info(`"Live on Dashboard!" 🚀`);
+      }
+    } catch (error) {
+      console.error("Error deploying site:", error);
+      toast.error("Error deploying site. Please try again.");
+    } finally {
+      // Turn off loading state.
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="bg-[#13131f] min-h-screen">
@@ -490,7 +532,10 @@ export default function EditPage() {
           </div>
           <ul className="flex items-center space-x-4 md:space-x-8">
             <li className="hidden sm:block hover:underline">
-              <Link to="/about" className="text-base md:text-lg text-text-color">
+              <Link
+                to="/about"
+                className="text-base md:text-lg text-text-color"
+              >
                 About Us
               </Link>
             </li>
@@ -528,7 +573,7 @@ export default function EditPage() {
               {messages &&
                 messages.map((message, index) => (
                   <button
-                  disabled={isLoading}
+                    disabled={isLoading}
                     className="w-full"
                     onClick={() =>
                       handleMessageClk(message._id, message.project_id)
@@ -581,20 +626,40 @@ export default function EditPage() {
                   <span className="text-2xl">&#10148;</span>
                 </button>
               </form>
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center space-x-4 mt-6 md:mt-3">
                 <button
                   onClick={saveHtml}
                   disabled={isLoading}
-                  className="w-[70%] md:w-1/2  h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-6 md:mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+                  className="w-[30%] h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0 flex items-center justify-center"
                 >
-                  Save work &nbsp; &#9654;  
+                  Save work <span className="ml-1">&#9654;</span>
                 </button>
+
                 <button
                   onClick={() => window.location.reload()}
                   disabled={isLoading}
-                  className="w-[70%] md:w-1/2 ml-[20%] h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-6 md:mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+                  className="w-[30%] h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0 flex items-center justify-center"
                 >
-                  Reload <span className="text-2xl">&#8634;</span>  
+                  Reload <span className="ml-1 text-2xl">&#8634;</span>
+                </button>
+
+                <button
+                  onClick={deploySiteHandle}
+                  disabled={isLoading}
+                  className="w-[30%] h-10 text-base font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0 flex items-center justify-center"
+                >
+                  {projectData.status === "DEPLOYED" ? "Redeploy" : "Deploy"}
+                  <span className="ml-1 text-2xl">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="30px"
+                      viewBox="0 -960 960 960"
+                      width="30px"
+                      fill="#38bdf8"
+                    >
+                      <path d="M463.08-200v-360.1l-98.26 98.25-24.26-23.89L480-625.18l139.44 139.44-24.26 23.89-98.26-98.25V-200h-33.84ZM200-597.49v-104.05q0-24.58 16.94-41.52Q233.88-760 258.46-760h443.08q24.58 0 41.52 16.94Q760-726.12 760-701.54v104.05h-33.85v-104.05q0-9.23-7.69-16.92-7.69-7.69-16.92-7.69H258.46q-9.23 0-16.92 7.69-7.69 7.69-7.69 16.92v104.05H200Z" />
+                    </svg>
+                  </span>
                 </button>
               </div>
             </div>
