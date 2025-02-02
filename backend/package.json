@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest --coverage",
     "build": "tsc",
+    "build:prod": "npm install && tsc",
     "start:prod": "node dist/index.js",
     "buildAndStart": "tsc && node dist/index.js"
   },
