@@ -20,6 +20,110 @@ For example:
 // All the HTML, CSS, JAVASCRIPT code here
 </iitg_ai_file>
 </file_starting_info>
+<grapesjs_style>
+Add this styling for coloring of grapes.js dashboard. Never ever change this styling. Always keep this same in style tag. No matter what change is said to do, never change the color of grapes.js dashboard. For example if user says to change the background color, then change the background color of only website not the grapes.js:
+.gjs-one-bg {
+    background-color: #1a0f23 !important; /* Deep Dark Purple */
+}
+
+.gjs-one-color {
+    color: #c3a6ff; /* Light Purple for Contrast */
+}
+
+.gjs-one-color-h:hover {
+    color: #e0c3ff;
+}
+
+.gjs-two-bg {
+    background-color: #2b1b38; /* Darker Purple */
+}
+
+.gjs-two-color {
+    color: #ffffff !important; /* White text */
+}
+
+.gjs-two-color-h:hover {
+    color: #d5b3ff;
+}
+
+.gjs-three-bg {
+    background-color: #3d2550; /* Rich Dark Purple */
+}
+
+.gjs-three-color {
+    color: #ffffff;
+}
+
+.gjs-three-color-h:hover {
+    color: #d3afff;
+}
+
+.gjs-four-bg {
+    background-color: #4e3065; /* Slightly brighter purple */
+}
+
+.gjs-four-color {
+    color: #e6c3ff;
+}
+
+.gjs-four-color-h:hover {
+    color: #e6c3ff;
+}
+
+/* Override styles */
+.gjs-title,
+.gjs-layer-name,
+.gjs-no-app,
+.gjs-sm-title {
+    font-weight: 500 !important;
+    color: #ffffff !important; /* White text for better contrast */
+}
+
+.gjs-color-warn {
+    color: #ff69b4; /* Hot Pink for contrast */
+}
+
+.gjs-clm-tags #gjs-clm-checkbox,
+.gjs-clm-tags #gjs-clm-close {
+    color: #ffffff !important; /* White icons */
+}
+
+.gjs-clm-tags #gjs-clm-new {
+    color: #ffffff;
+    padding: 5px 6px;
+    display: none;
+    background-color: #1a0f23;
+}
+
+.gjs-sm-sector .gjs-sm-field select,
+.gjs-clm-tags .gjs-sm-field select,
+.gjs-sm-sector .gjs-clm-field select,
+.gjs-clm-tags .gjs-clm-field select,
+.gjs-sm-sector .gjs-sm-field input,
+.gjs-clm-tags .gjs-sm-field input,
+.gjs-sm-sector .gjs-clm-field input,
+.gjs-clm-tags .gjs-clm-field input,
+.gjs-field input,
+.gjs-field select,
+.gjs-field textarea {
+    color: #ffffff;
+    background-color: #321a42;
+    font-size: 13px;
+}
+
+.gjs-field-color-picker {
+    background-color: #5a3370 !important;
+}
+
+.gjs-radio-item input:checked + .gjs-radio-item-label {
+    background-color: #ffffff;
+}
+
+.gjs-sm-sector .gjs-sm-stack #gjs-sm-add,
+.gjs-clm-tags .gjs-sm-stack #gjs-sm-add {
+    color: #ffffff;
+}
+</grapesjs_style>
 <grapesjs_constraints>
 1. Declare the id of root div as gjs and decare the root div exactly like this:
     <div id="gjs" style="height: 0px; overflow: hidden">
