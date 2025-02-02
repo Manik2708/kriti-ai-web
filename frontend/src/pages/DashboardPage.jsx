@@ -7,6 +7,7 @@ import {
   UserButton,
   useAuth,
 } from "@clerk/clerk-react";
+import { ChartNoAxesGantt } from "lucide-react";
 import AddCircleIcon from "../assets/addIcon.svg";
 import LogoutIcon from "../assets/logOut.svg";
 import editSite from "../assets/editSite.svg";
@@ -102,6 +103,7 @@ const Dashboard = () => {
         messages: site.messages,
         projectId: site._id,
         deployment_link: site.deployment_link || "",
+        lastEdited: new Date(site.last_edited).toLocaleDateString(),
       }));
 
       // Append the dynamic sites to the existing array
@@ -115,12 +117,11 @@ const Dashboard = () => {
   // Send user data to the backend and fetch sites when user is signed in
   useEffect(() => {
     if (user && isSignedIn) {
-        setSites([]); // ✅ Fix: Clear state before fetching
-        sendUserDataToBackend(user);
-        fetchSites();
+      setSites([]); // ✅ Fix: Clear state before fetching
+      sendUserDataToBackend(user);
+      fetchSites();
     }
-}, [user, isSignedIn]);
-
+  }, [user, isSignedIn]);
 
   // Handle account modal toggle
   const toggleAccountModal = () => {
@@ -179,7 +180,7 @@ const Dashboard = () => {
     }
   };
 
-  const deleteSiteHandle  = async (id) =>{
+  const deleteSiteHandle = async (id) => {
     const response = await fetch(`${backend}/project/${id}`, {
       method: "DELETE",
       headers: {
@@ -190,7 +191,7 @@ const Dashboard = () => {
     if (!response.ok) {
       throw new Error("Failed to delete the site. Please try again.");
     }
-  }
+  };
   return (
     <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-text-color min-h-screen overflow-x-hidden relative">
       {/* Navigation */}
@@ -212,13 +213,21 @@ const Dashboard = () => {
             </li>
             <li className="cursor-pointer">
               <SignedIn>
-                <UserButton />
+                <UserButton>
+                  <UserButton.MenuItems>
+                    <UserButton.Link
+                      label="Dashboard"
+                      labelIcon={<ChartNoAxesGantt size={15} />}
+                      href="/dashboard"
+                    />
+                    <UserButton.Action label="manageAccount" />
+                  </UserButton.MenuItems>
+                </UserButton>
               </SignedIn>
             </li>
           </ul>
         </div>
       </nav>
-
       {/* Dashboard Section */}
       <div className="flex justify-center w-full pt-24 md:pt-28 px-4">
         <div className="w-full max-w-7xl">
@@ -240,70 +249,80 @@ const Dashboard = () => {
 
       {/* Sites List */}
       <div className="flex justify-center w-full bg-gradient-to-br from-[#171124] to-[#1c142b] mt-8 px-4">
-        <div className="w-full max-w-7xl flex flex-col space-y-6">
+        <div className="w-full max-w-7xl flex flex-col space-y-6 pb-4">
           {sites.map((site, index) => (
             <div className="w-full rounded-[25px] h-17 flex flex-col md:flex-row bg-dashboard-item shadow-custom">
-      {/* Website Name and URL Section */}
-      <div className="w-full px-4 py-2 md:px-8 md:py-4 ">
-        <div className="w-full">
-          <div className="text-lg md:text-2xl font-semibold font-montserrat text-[var(--text-color)] truncate">
-            {site.title}<span className='text-sm font-inter ml-2 font-normal'>{site.deployment_link ? site.deployment_link : " "}</span>
-          </div>
-          <div className="text-sm md:text-base text-gray-400 font-medium">
-          <span className='text-sm font-inter font-normal'>{site.description }</span>
-          </div>
-        </div>
-      </div>
+              {/* Website Name and URL Section */}
+              <div className="w-full px-4 py-2 md:px-8 md:py-4 ">
+                <div className="w-full">
+                  <div className="text-lg md:text-2xl font-semibold font-montserrat text-[var(--text-color)] truncate">
+                    {site.title}
+                    <span className="text-sm font-inter ml-2 font-normal">
+                      {site.deployment_link ? site.deployment_link : " "}
+                    </span>
+                  </div>
+                  <div className="text-sm md:text-base text-gray-400 font-medium">
+                    <span className="text-sm font-inter font-normal">
+                      {site.description}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {/* Last Edited Section */}
+              <div className="w-full md:w-3/12 mr-9 justify-end py-2 md:py-4 border-gray-400 flex  items-center md:flex">
+                <div className="text-sm md:text-base font-montserrat text-gray-400">
+                  Last Edited:
+                </div>
+                <div className=" font-montserrat ml-1 text-gray-500">
+                  {site.lastEdited}
+                </div>
+              </div>
+              {/* Action Buttons Section (Delete, Edit, Deploy) */}
+              <div className="w-full flex flex-row md:w-1/4 justify-around py-2 md:py-4">
+                {/* Delete Button */}
+                <div
+                  className="flex justify-center w-[30%] border-l border-r border-gray-400 items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+                  onClick={() => deleteSiteHandle(site.projectId)}
+                >
+                  <img
+                    src={LogoutIcon}
+                    alt="Delete site"
+                    className="w-6 h-6 md:w-8 md:h-8"
+                  />
+                </div>
 
-      {/* Last Edited Section */}
-      <div className="w-full md:w-1/12 py-2 md:py-4 border-gray-400 flex flex-col items-center md:flex">
-        <div className="text-sm md:text-base font-montserrat text-gray-400">Last Edited:</div>
-        <div className="text-lg font-montserrat text-500">{site.lastEdited}</div>
-      </div>
+                {/* Edit Button */}
+                <div
+                  className="flex justify-center w-[30%] border-r border-gray-400 items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+                  onClick={() => navigate(`/edit/${site.projectId}`)}
+                >
+                  <img
+                    src={editSite}
+                    alt="Edit site"
+                    className="w-6 h-6 md:w-8 md:h-8"
+                  />
+                </div>
 
-      {/* Action Buttons Section (Delete, Edit, Deploy) */}
-      <div className="w-full flex flex-row md:w-1/4 justify-around py-2 md:py-4">
-        {/* Delete Button */}
-        <div
-          className="flex justify-center w-[30%] border-l border-r border-gray-400 items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-          onClick={() => deleteSiteHandle(site.projectId)}
-        >
-          <img
-            src={LogoutIcon}
-            alt="Delete site"
-            className="w-6 h-6 md:w-8 md:h-8"
-          />
-        </div>
-        
-        {/* Edit Button */}
-        <div
-          className="flex justify-center w-[30%] border-r border-gray-400 items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-          onClick={() => navigate(`/edit/${site.projectId}`)}
-        >
-          <img
-            src={editSite}
-            alt="Edit site"
-            className="w-6 h-6 md:w-8 md:h-8"
-          />
-        </div>
-
-        {/* Deploy Button */}
-        <div
-          className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
-          onClick={
-            site.deployment_link
-              ? () => console.log("deployed")
-              : deploySiteHandle
-          }
-        >
-          <img
-            src={site.deployment_link ? siteDeployed : publishSite}
-            alt={site.deployment_link ? "Site deployed" : "Publish site"}
-            className="w-6 h-6 md:w-8 md:h-8"
-          />
-        </div>
-      </div>
-    </div>
+                {/* Deploy Button */}
+                <div
+                  className="flex justify-center w-[30%] items-center cursor-pointer hover:bg-gray-800/30 transition-colors duration-200"
+                  onClick={
+                    site.deployment_link
+                      ? () => console.log("deployed")
+                      : deploySiteHandle
+                  }
+                >
+                  <img
+                    src={site.deployment_link ? siteDeployed : publishSite}
+                    alt={
+                      site.deployment_link ? "Site deployed" : "Publish site"
+                    }
+                    className="w-6 h-6 md:w-8 md:h-8"
+                  />
+                </div>
+              </div>
+                  
+            </div>
           ))}
         </div>
       </div>
@@ -318,48 +337,49 @@ const Dashboard = () => {
 
       {/* Account Modal */}
       {isModalVisible && (
-       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-       <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-white font-['Montserrat'] rounded-lg w-96 p-6">
-         <div className="flex justify-between items-center">
-           <h2 className="text-xl font-bold">Create New Site</h2>
-           {/* <button onClick={toggleModal}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-gradient-to-br from-[#171124] to-[#1c142b] text-white font-['Montserrat'] rounded-lg w-96 p-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">Create New Site</h2>
+              {/* <button onClick={toggleModal}>
              <img src={CloseIcon} alt="Close" className="w-6 h-6" />
            </button> */}
-         </div>
-         <div className="mt-4">
-           <label className="block text-sm font-medium">Title</label>
-           <input
-             type="text"
-             className="md:w-[90%] h-8 md:text-sm bg-transparent border-b border-gray-500 self-center font-['Inter'] text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#5271ff]"
-             value={title}
-             onChange={(e) => setTitle(e.target.value)}
-           />
-         </div>
-         <div className="mt-4">
-           <label className="block text-sm font-medium">Description</label>
-           <textarea
-             className="w-full text-sm border border-gray-400 bg-transparent rounded-lg p-2 mt-1"
-             rows="3"
-             value={description}
-             onChange={(e) => setDescription(e.target.value)}
-           ></textarea>
-         </div>
-         <div className="mt-4 flex justify-end space-x-2">
-           <button
-             onClick={toggleModal}
-             className="w-[35%] md: h-10 text-sm font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
-           >
-             Cancel &nbsp; &#9654;
-           </button>
-           <button
-             onClick={() => handleCreateSite(title, description)}
-             className="w-[35%] md: h-10 text-sm font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
-           >
-             Continue &nbsp; &#9654;
-           </button>
-         </div>
-       </div>
-     </div>
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Title</label>
+              <input
+                type="text"
+                className="md:w-[90%] h-8 md:text-sm bg-transparent border-b border-gray-500 self-center font-['Inter'] text-sm text-white placeholder-gray-400 focus:outline-none focus:border-[#5271ff]"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium">Description</label>
+              <textarea
+                className="w-full text-sm border border-gray-400 bg-transparent rounded-lg p-2 mt-1"
+                rows="3"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </div>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                onClick={toggleModal}
+                className="w-[35%] md: h-10 text-sm font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+              >
+                Cancel &nbsp; &#9654;
+              </button>
+              <button
+                onClick={() => handleCreateSite(title, description)}
+                className="w-[35%] md: h-10 text-sm font-['Inter'] font-semibold text-[#38bdf8] bg-[#2d2351] rounded-full self-center mt-3 shadow-xl hover:bg-[#3a2c6a] hover:scale-105 transition-transform duration-150 ease-out border-0"
+              >
+                Continue &nbsp; &#9654;
+              </button>
+            </div>
+          </div>
+              
+        </div>
       )}
     </div>
   );

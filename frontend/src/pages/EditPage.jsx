@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ChartNoAxesGantt } from "lucide-react";
 export default function EditPage() {
   const aiQuotes = [
     "Brewing brilliance for your website...",
@@ -108,8 +109,8 @@ export default function EditPage() {
         editor.store();
         await new Promise((resolve) => setTimeout(resolve, 200)); // Ensure changes apply
         const htmlContent = editor.getHtml();
-        console.log(htmlContent)
-        console.log(htmlContent)
+        console.log(htmlContent);
+        console.log(htmlContent);
         const cssContent = editor.getCss();
         const jsContent = editor.getJs ? editor.getJs() : "";
 
@@ -449,7 +450,7 @@ export default function EditPage() {
         });
         console.log(response2);
         if (response.ok && response2.ok) {
-         // const responseData = await response.json();
+          // const responseData = await response.json();
         } else {
           console.error("Failed to send message:", response.statusText);
           handleSuccess("Failed to send message. Please try again.");
@@ -495,7 +496,16 @@ export default function EditPage() {
             </li>
             <li className="cursor-pointer">
               <SignedIn>
-                <UserButton />
+                <UserButton afterSwitchSessionUrl="/login">
+                  <UserButton.MenuItems>
+                    <UserButton.Link
+                      label="Dashboard"
+                      labelIcon={<ChartNoAxesGantt size={15} />}
+                      href="/dashboard"
+                    />
+                    <UserButton.Action label="manageAccount" />
+                  </UserButton.MenuItems>
+                </UserButton>
               </SignedIn>
             </li>
           </ul>
