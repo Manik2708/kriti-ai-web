@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { SignedIn, UserButton } from "@clerk/clerk-react";
+import { ChartNoAxesGantt } from "lucide-react";
 
 export default function AboutUs() {
     return (
@@ -23,7 +24,16 @@ export default function AboutUs() {
             </li>
             <li className="cursor-pointer">
               <SignedIn>
-                <UserButton />
+              <UserButton afterSwitchSessionUrl="/login">
+                  <UserButton.MenuItems>
+                    <UserButton.Link
+                      label="Dashboard"
+                      labelIcon={<ChartNoAxesGantt size={15} />}
+                      href="/dashboard"
+                    />
+                    <UserButton.Action label="manageAccount" />
+                  </UserButton.MenuItems>
+                </UserButton>
               </SignedIn>
             </li>
           </ul>
