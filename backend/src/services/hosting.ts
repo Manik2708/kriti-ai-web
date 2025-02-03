@@ -94,7 +94,7 @@ export class HostingServices implements HostingFactory {
                     }
                 })
             }catch (e) {
-                logger.error("Error while creating pages: ", JSON.stringify(e));
+                logger.error("Error while creating pages: "+JSON.stringify(e));
             }
         }
     }

@@ -12,7 +12,7 @@ export class PubSub implements PubSubFactory {
     init(): void {
         this.emitter.on(PubSub.DEPLOY, async (id: string) => {
             try{
-                logger.info("Listening on PubSub for Project", id);
+                logger.info("Listening on PubSub for Project" + id);
                 let project = await Project.findById(id)
                 if (!project) {
                     logger.info(`PubSub project ${id} not found`)
