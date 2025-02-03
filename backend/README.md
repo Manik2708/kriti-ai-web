@@ -1,69 +1,11 @@
-# Controllers Information
-1. `/user`
-```angular2html
-PATH: /
-TYPE: POST
-REQ.AUTH = FALSE
-REQ.BODY = {
-    name: string
-    email: string
-    clerk_user_id: string
-}
+# IITGWebPro Server
+This repository consists the server-side code of IITGWebPro. IITGWebPro is a platform which enables the users to generate websites from AI and edit them using a no-code interface.
 
-PATH: /projects
-TYPE: GET
-REQ.AUTH = TRUE
-REQ.BODY = {}
-```
-2. `/project`
-```angular2html
-REQ.AUTH_FOR_ALL: TRUE
+# Technical Information
+1. See [CONTROLLERS.md](CONTROLLERS.md) for getting all the information related to the exposed APIs.
+2. See [INSTALLATION.md](INSTALLATION.md) for running the server locally on your machine.
 
-PATH: /
-TYPE: POST
-REQ.BODY = {
-    title: string
-    description: string
-    editable_file: string
-    non_editable_file: string
-}
+# [EXPERIMENTAL] Auto-Deployment Feature
+This section consist the core architecture of Auto-Deployment by using an internal Pub-Sub and GitHub Pages.
 
-PATH: /?projectId="project_id_here"
-TYPE: GET
-REQ.BODY = {} // Response without messages
-
-PATH: /
-TYPE: PUT
-REQ.BODY = {
-    _id: string
-    title: string
-    description: string
-    editable_file: string
-    non_editable_file: string
-}
-
-PATH: /:projectId
-TYPE: DELETE
-REQ.BODY = {}
-```
-3. `/message`
-```angular2html
-REQ.AUTH_FOR_ALL: TRUE
-
-PATH: /
-TYPE: GET
-REQ.BODY = {
-    project_id: string
-    message_id: string
-}
-
-PATH: /
-TYPE: POST
-REQ.BODY = {
-    project_id: string
-    message_id: string
-    message: string
-    website_content: string
-    user_type: 'USER' | 'AI'
-}
-```
+![](deployment-architecture.png)
