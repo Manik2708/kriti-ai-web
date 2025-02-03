@@ -237,7 +237,7 @@ const Dashboard = () => {
       throw new Error("Failed to delete the site. Please try again.");
     } else {
       toast.info("Project deleted successfully");
-      await new Promise((resolve) => setTimeout(resolve, 5000)); 
+      await new Promise((resolve) => setTimeout(resolve, 1000)); 
       window.location.reload();
     }
   };
