@@ -19,32 +19,9 @@ import { ClipLoader } from "react-spinners";
 
 const Dashboard = () => {
   const backend = process.env.REACT_APP_BACKEND_URL;
-  const aiQuotes = [
-    "Brewing brilliance for your website...",
-    "Crafting your digital masterpiece...",
-    "Spinning the web magic...",
-    "Stirring up creativity for your site...",
-    "Mixing ideas into a stunning website...",
-    "Forging the perfect online presence...",
-    "Weaving your vision into reality...",
-    "Cooking up something amazing for you...",
-    "Generating web wonders...",
-    "Building your digital dream...",
-    "Designing with artificial intelligence...",
-    "Transforming thoughts to code...",
-    "Conjuring captivating content...",
-    "Animating your aspirations...",
-    "Architecting your online presence...",
-    "Engineering excellence for your website...",
-    "Coding with care and precision...",
-    "Developing dynamic designs...",
-    "Fostering flawless functionality...",
-    "Innovating your internet identity...",
-  ];
   const { getToken } = useAuth();
   const { user, isSignedIn } = useUser();
   const navigate = useNavigate();
-    const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const [isAccountVisible, setIsAccountVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
   const [title, setTitle] = useState(""); // For the title input
@@ -53,24 +30,6 @@ const Dashboard = () => {
   // Initial hardcoded sites array
   const [sites, setSites] = useState([]);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    let quoteInterval;
-
-    if (isLoading) {
-      quoteInterval = setInterval(() => {
-        setCurrentQuoteIndex((prevIndex) =>
-          prevIndex === aiQuotes.length - 1 ? 0 : prevIndex + 1
-        );
-      }, 3000); // Change quote every 3 seconds
-    }
-
-    return () => {
-      if (quoteInterval) {
-        clearInterval(quoteInterval);
-      }
-    };
-  }, [isLoading, aiQuotes.length]);
-
   // Function to send user data to the backend
   const sendUserDataToBackend = async (user) => {
     if (!user) return;
@@ -344,9 +303,6 @@ const Dashboard = () => {
                 // Spinner Overlay
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center transition-opacity duration-500">
                   <ClipLoader color="#ffffff" size={60} />
-                  <p className="text-white mt-4 text-lg fade-in">
-                    {aiQuotes[currentQuoteIndex]}
-                  </p>
                 </div>
               )}
         <div className="w-full max-w-7xl flex flex-col space-y-6 pb-4">

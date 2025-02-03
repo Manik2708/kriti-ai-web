@@ -598,14 +598,15 @@ export default function EditPage() {
                 className="bg-[#1e1e2d] h-11 overflow-hidden rounded-xl flex items-center gap-2"
                 onSubmit={enterMessage}
               >
-                <textarea
+                <input
+                type="text"
                   disabled={isLoading} // Disable during loading
                   className="bg-transparent p-3 md:p-4 h-[55px] no-scrollbar overflow-auto outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
                   placeholder="Make a website that..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
-                ></textarea>
+                />
                 <button
                   ref={sendButtonRef}
                   type="submit"
