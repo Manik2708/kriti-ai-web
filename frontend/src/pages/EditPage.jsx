@@ -600,7 +600,7 @@ export default function EditPage() {
               >
                 <textarea
                   disabled={isLoading} // Disable during loading
-                  className="bg-transparent p-3 md:p-4 h-[55px] overflow-auto outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
+                  className="bg-transparent p-3 md:p-4 h-[55px] no-scrollbar overflow-auto outline-none text-white text-sm md:text-base flex-grow resize-none placeholder-gray-500"
                   placeholder="Make a website that..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
