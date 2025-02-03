@@ -14,26 +14,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { ChartNoAxesGantt } from "lucide-react";
 export default function EditPage() {
   const aiQuotes = [
-    "Brewing brilliance for your website...",
-    "Crafting your digital masterpiece...",
-    "Spinning the web magic...",
-    "Stirring up creativity for your site...",
-    "Mixing ideas into a stunning website...",
-    "Forging the perfect online presence...",
-    "Weaving your vision into reality...",
-    "Cooking up something amazing for you...",
-    "Generating web wonders...",
-    "Building your digital dream...",
-    "Designing with artificial intelligence...",
-    "Transforming thoughts to code...",
-    "Conjuring captivating content...",
-    "Animating your aspirations...",
-    "Architecting your online presence...",
-    "Engineering excellence for your website...",
-    "Coding with care and precision...",
-    "Developing dynamic designs...",
-    "Fostering flawless functionality...",
-    "Innovating your internet identity...",
+   "Loading website essentials...",
+      "Building your experience...",
+      "Your content is on its way...",
+      "Please wait while we load magic...",
+      "Enhancing your digital space...",
+      "Brewing creative code...",
+      "Crafting an awesome interface...",
+      "Design in progress...",
+      "Fetching your digital masterpiece...",
+      "Optimizing performance..."
   ];
   const [editorReady, setEditorReady] = useState(false);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
@@ -76,9 +66,6 @@ export default function EditPage() {
     const editablejava = scriptMatch ? scriptMatch[0] : "";
     setEditablejs(editablejava);
   }, [template5]);
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleSuccess = (message) => {
@@ -104,13 +91,9 @@ export default function EditPage() {
   
   const saveHtml = async () => {
     if (!editorReady) {
-      console.log("Editor not yet accessible. Waiting...");
-      // Optionally, you can wait a bit and try again instead of showing an error.
       return;
     }
     const iframe = iframeRef.current;
-    const test = iframe && iframe.contentWindow && iframe.contentWindow.editor;
-    console.log(test);
     if (iframe && iframe.contentWindow && iframe.contentWindow.editor) {
       const editor = iframe.contentWindow.editor;
       try {
@@ -121,14 +104,11 @@ export default function EditPage() {
         const newPadding = currentPadding === "0px" ? "0.000000001px" : "0px";
         wrapper.addStyle({ padding: newPadding });
 
-        console.log("Triggered CSS change: Padding set to", newPadding);
 
         // **Step 2: Store and get updated HTML**
         editor.store();
         await new Promise((resolve) => setTimeout(resolve, 200)); // Ensure changes apply
         const htmlContent = editor.getHtml();
-        console.log(htmlContent);
-        console.log(htmlContent);
         const cssContent = editor.getCss();
         const jsContent = editor.getJs ? editor.getJs() : "";
 
@@ -249,7 +229,6 @@ export default function EditPage() {
         if (response.ok) {
           handleSuccess("HTML saved successfully!");
         } else {
-          console.log("Failed to save HTML:", response);
           handleSuccess("Failed to save HTML.");
         }
       } catch (error) {
@@ -334,7 +313,6 @@ export default function EditPage() {
         throw new Error("No content found inside <iitg_ai_file> tags.");
       }
     } catch (error) {
-      console.log("Error fetching AI response:", error);
       return null;
     }
   };
@@ -375,13 +353,11 @@ export default function EditPage() {
         throw new Error("No content found inside <iitg_ai_file> tags.");
       }
     } catch (error) {
-      console.log("Error fetching AI response:", error);
       return null;
     }
   };
   const handleMessageClk = async (message_id, project_id) => {
     try {
-      console.log(message_id, project_id);
       const response = await fetch(`${backend}/message/get`, {
         method: "POST",
         headers: {
@@ -458,7 +434,6 @@ export default function EditPage() {
         aiResponse.message = aiResponse.message
           ? aiResponse.message
           : "Here are the changes you suggested to do ";
-        console.log(aiResponse);
         const response2 = await fetch(`${backend}/message`, {
           method: "POST",
           headers: {
@@ -467,9 +442,7 @@ export default function EditPage() {
           },
           body: JSON.stringify(aiResponse),
         });
-        console.log(response2);
         if (response.ok && response2.ok) {
-          // const responseData = await response.json();
         } else {
           console.error("Failed to send message:", response.statusText);
           handleSuccess("Failed to send message. Please try again.");
@@ -710,18 +683,6 @@ export default function EditPage() {
             </div>
           </div>
         </div>
-        {/* Save Button
-        <div className="px-4 flex mt-4">
-          <button
-            onClick={saveHtml}
-            disabled={isLoading} // Optional: Disable during saving
-            className={`bg-blue-500 text-white px-4 py-2 rounded ${
-              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
-            }`}
-          >
-            Save Current State
-          </button>
-        </div> */}
       </main>
     </div>
   );
