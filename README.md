@@ -1,5 +1,5 @@
 # IITGWebPro - AI-Powered Website Generator
-You can visit the website from [here](kriti-ai-web.vercel.app) 
+You can visit the website from [here](https://kriti-ai-web.vercel.app) 
 Note: The Server can go down as it is run on the free tier. In such a case kindly inform us.
 
 ## Overview
