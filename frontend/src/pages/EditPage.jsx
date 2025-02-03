@@ -14,16 +14,26 @@ import "react-toastify/dist/ReactToastify.css";
 import { ChartNoAxesGantt } from "lucide-react";
 export default function EditPage() {
   const aiQuotes = [
-   "Loading website essentials...",
-      "Building your experience...",
-      "Your content is on its way...",
-      "Please wait while we load magic...",
-      "Enhancing your digital space...",
-      "Brewing creative code...",
-      "Crafting an awesome interface...",
-      "Design in progress...",
-      "Fetching your digital masterpiece...",
-      "Optimizing performance..."
+    "Brewing brilliance for your website...",
+    "Crafting your digital masterpiece...",
+    "Spinning the web magic...",
+    "Stirring up creativity for your site...",
+    "Mixing ideas into a stunning website...",
+    "Forging the perfect online presence...",
+    "Weaving your vision into reality...",
+    "Cooking up something amazing for you...",
+    "Generating web wonders...",
+    "Building your digital dream...",
+    "Designing with artificial intelligence...",
+    "Transforming thoughts to code...",
+    "Conjuring captivating content...",
+    "Animating your aspirations...",
+    "Architecting your online presence...",
+    "Engineering excellence for your website...",
+    "Coding with care and precision...",
+    "Developing dynamic designs...",
+    "Fostering flawless functionality...",
+    "Innovating your internet identity...",
   ];
   const [editorReady, setEditorReady] = useState(false);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
